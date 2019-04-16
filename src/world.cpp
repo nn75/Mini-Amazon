@@ -67,7 +67,9 @@ void World::connect2world(const char *hostname) {
     }
 
     // Connect to world with shackhands
-    this->setup_world();
+    if (!this->setup_world()) {
+        this->fail_connect("Setup world failed");
+    }
 
     return;
 }
@@ -101,9 +103,10 @@ bool World::setup_world(void) {
         return false;
     }
 #ifdef DEBUG
-    cerr << "Send WorldID: " << connect_request->worldid() << endl;
-    cerr << "Send Initwh size: " << connect_request->initwh_size() << endl;
-    cerr << "Send IsAmazon: " << connect_request->isamazon() << endl;
+    cerr << "DEBUG: Send WorldID: " << connect_request->worldid() << endl;
+    cerr << "DEBUG: Send Initwh size: " << connect_request->initwh_size()
+         << endl;
+    cerr << "DEBUG: Send IsAmazon: " << connect_request->isamazon() << endl;
 #endif
 
     // Send request to server
@@ -135,7 +138,7 @@ bool World::setup_world(void) {
     }
 
 #ifdef DEBUG
-    cerr << "Recv WorldID: " << worldid << endl;
+    cerr << "DEBUG: Recv WorldID: " << worldid << endl;
 #endif
 
     cerr << "World: Connect Success!" << endl;
