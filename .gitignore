@@ -1,1 +1,5 @@
-src/a.out
+*/a.out
+*/*.o
+*/*.dbg.o
+*/test
+*/debug
