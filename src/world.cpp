@@ -30,7 +30,7 @@ long World::get_worldid() { return worldid; }
 void World::set_worldid(long id) { worldid = id; }
 
 void World::fail_connect(const char *err_msg) {
-    cerr << "\n " << err_msg << " \n" << endl;
+    cerr << "World Err:  " << err_msg << endl;
     if (sock_fd != INVALID_FD) {
         close(sock_fd);
     }
@@ -138,7 +138,7 @@ bool World::setup_world(void) {
     cerr << "Recv WorldID: " << worldid << endl;
 #endif
 
-    cerr << "\n Connect Success! \n" << endl;
+    cerr << "World: Connect Success!" << endl;
 
     return true;
 }
