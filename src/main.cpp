@@ -13,11 +13,11 @@ int main() {
 
     World world(0, houses);
 
-    cout << "Connect to 127.0.0.1 without worldid" << endl;
+    cout << "\nTest 1: Connect to 127.0.0.1 without worldid" << endl;
     world.connect("127.0.0.1");
     world.disconnect();
 
-    cout << "Connect to 127.0.0.1 with invalid worldid" << endl;
+    cout << "\nTest 2: Connect to 127.0.0.1 with invalid worldid" << endl;
     world.connect("127.0.0.1", 0xdeadbeef);
 
     google::protobuf::ShutdownProtobufLibrary();
