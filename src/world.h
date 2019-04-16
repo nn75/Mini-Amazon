@@ -3,6 +3,8 @@
 #endif
 
 #define PORT 23456
+#define INVALID_FD -1
+#define INVALID_ID -1
 
 #include "warehouse.h"
 
@@ -16,16 +18,22 @@ class World {
     unsigned int warehouse_number;
     Warehouse *warehouses;
     // world id, for test
-    int worldid;
+    long worldid;
 
-    // Functions
+    // Hand shake with server
     bool setup_world(void);
+    // Change state into failed connection
+    void fail_connect(const char *err_msg);
 
    public:
-    // Functions
+    // Constructor
     World(unsigned int n, Warehouse *houses);
+    // Connect to server
     void connect2world(const char *hostname);
+    // Check whether world is connect
     bool is_connect();
-    int get_worldid();
-    void set_worldid(int id);
+    // Get worldid
+    long get_worldid();
+    // Set worldid
+    void set_worldid(long id);
 };
