@@ -100,11 +100,9 @@ bool World::setup_sock(const char *hostname) {
 }
 
 bool World::setup_world(long id) {
-    // Set worldid
-    worldid = id;
-
     // Check sock connect statue
-    if (!this->is_connect()) {
+    if (sock_fd == INVALID_FD) {
+        this->fail_connect("Setup sock fisrt");
         return false;
     }
 
@@ -120,9 +118,9 @@ bool World::setup_world(long id) {
         house_request->set_y(warehouses[i].get_y());
     }
 
-    // Sepecific worldid if need
-    if (worldid != INVALID_ID) {
-        connect_request->set_worldid(worldid);
+    // Sepecific id if need
+    if (id != INVALID_ID) {
+        connect_request->set_worldid(id);
     }
 
     // Check whether connect_request is valid
@@ -159,14 +157,11 @@ bool World::setup_world(long id) {
         return false;
     }
 
-    if (worldid == INVALID_ID) {
-        worldid = connect_response->worldid();
-    } else {
-        if (worldid != connect_response->worldid()) {
-            this->fail_connect("Inconstant worldid");
-            return false;
-        }
+    if (id != INVALID_ID && id != connect_response->worldid()) {
+        this->fail_connect("Inconstant worldid");
+        return false;
     }
+    worldid = connect_response->worldid();
 
 #ifdef DEBUG
     cerr << "DEBUG: Recv WorldID: " << worldid << endl;
