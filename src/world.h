@@ -9,6 +9,9 @@
 #include "warehouse.h"
 
 class World {
+    /////////////////////////////////
+    /// Public members start here
+    /////////////////////////////////
    private:
     // World's port number
     const int port;
@@ -27,6 +30,9 @@ class World {
     // Change state into failed connection
     void fail_connect(const char *err_msg);
 
+    /////////////////////////////////
+    /// Public members start here
+    /////////////////////////////////
    public:
     // Constructor
     World(unsigned int n, Warehouse *houses);
@@ -38,4 +44,22 @@ class World {
     bool is_connect();
     // Get worldid
     long get_worldid();
+
+    // Method for send protobuf message
+    template <typename T>
+    bool send_msg(const T &message) {
+        if (!this->is_connect()) {
+            return false;
+        }
+        return sendMesgTo(message, sock_fd);
+    }
+
+    // Method for recv protobuf message
+    template <typename T>
+    bool recv_msg(T &message) {
+        if (!this->is_connect()) {
+            return false;
+        }
+        return recvMesgFrom(message, sock_fd);
+    }
 };

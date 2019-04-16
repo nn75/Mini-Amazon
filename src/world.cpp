@@ -27,7 +27,9 @@ World::World(unsigned int n, Warehouse *houses) : port(PORT) {
 }
 
 // Check whether world is connected
-bool World::is_connect() { return sock_fd != -1; }
+bool World::is_connect() {
+    return (sock_fd != INVALID_FD && worldid != INVALID_ID);
+}
 
 long World::get_worldid() { return worldid; }
 
