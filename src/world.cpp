@@ -33,11 +33,6 @@ bool World::is_connect() {
 
 long World::get_worldid() { return worldid; }
 
-void World::fail_connect(const char *err_msg) {
-    cerr << "World Err:  " << err_msg << endl;
-    this->disconnect();
-}
-
 void World::disconnect() {
     if (sock_fd != INVALID_FD) {
         close(sock_fd);
@@ -68,6 +63,11 @@ bool World::connect(const char *hostname, long id) {
 /////////////////////////////////
 /// Private methods start here
 /////////////////////////////////
+
+void World::fail_connect(const char *err_msg) {
+    cerr << "World Err:  " << err_msg << endl;
+    this->disconnect();
+}
 
 bool World::setup_sock(const char *hostname) {
     struct sockaddr_in address;
