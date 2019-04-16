@@ -6,6 +6,15 @@ if ! [ -x "$(command -v clang-format)" ]; then
     exit 1
 fi
 
-tmpfile=$(mktemp /tmp/clang-format.XXXXXX)
-clang-format -style="{BasedOnStyle: Google, IndentWidth: 4}" $1 > $tmpfile
-mv $tmpfile $1
+if [ $# != 1 ] ; then
+	echo "USAGE: $0 <target_dir>"
+	exit -1;
+fi
+
+for f in $(ls $1/*.h $1/*.cpp); do
+    echo "Formating: " $f
+    tmpfile=$(mktemp /tmp/clang-format.XXXXXX)
+    clang-format -style="{BasedOnStyle: Google, IndentWidth: 4}" $f > $tmpfile
+    mv $tmpfile $f
+done
+
