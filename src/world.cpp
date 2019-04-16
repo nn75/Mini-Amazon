@@ -14,6 +14,10 @@
 
 using namespace std;
 
+/////////////////////////////////
+/// Public methods start here
+/////////////////////////////////
+
 // Constructor for World
 World::World(unsigned int n, Warehouse *houses) : port(PORT) {
     sock_fd = INVALID_FD;
@@ -27,10 +31,12 @@ bool World::is_connect() { return sock_fd != -1; }
 
 long World::get_worldid() { return worldid; }
 
-void World::set_worldid(long id) { worldid = id; }
-
 void World::fail_connect(const char *err_msg) {
     cerr << "World Err:  " << err_msg << endl;
+    this->disconnect();
+}
+
+void World::disconnect() {
     if (sock_fd != INVALID_FD) {
         close(sock_fd);
     }
@@ -38,15 +44,37 @@ void World::fail_connect(const char *err_msg) {
     worldid = INVALID_ID;
 }
 
-// Connect to target hostname
-void World::connect2world(const char *hostname) {
+// Connect to target hostname with given worldid
+bool World::connect(const char *hostname, long id) {
+    // Connect socket with server
+    if (!this->setup_sock(hostname)) {
+        this->fail_connect("Setup socket failed");
+        return false;
+    }
+
+    // Connect to world with shackhands
+    if (!this->setup_world(id)) {
+        this->fail_connect("Setup world failed");
+        return false;
+    }
+
+    cerr << "World: Connect Success!" << endl;
+
+    return true;
+}
+
+/////////////////////////////////
+/// Private methods start here
+/////////////////////////////////
+
+bool World::setup_sock(const char *hostname) {
     struct sockaddr_in address;
     struct sockaddr_in serv_addr;
 
     // Create socket
     if ((sock_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         this->fail_connect("Socket creation error");
-        return;
+        return false;
     }
 
     memset(&serv_addr, '\x00', sizeof(serv_addr));
@@ -56,25 +84,23 @@ void World::connect2world(const char *hostname) {
     // Convert IPv4 and IPv6 addresses from text to binary form
     if (inet_pton(AF_INET, hostname, &serv_addr.sin_addr) <= 0) {
         this->fail_connect("Invalid address/ Address not supported");
-        return;
+        return false;
     }
 
     // Connect to server
-    if (connect(sock_fd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) <
+    if (::connect(sock_fd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) <
         0) {
         this->fail_connect("Connect failed");
-        return;
+        return false;
     }
 
-    // Connect to world with shackhands
-    if (!this->setup_world()) {
-        this->fail_connect("Setup world failed");
-    }
-
-    return;
+    return true;
 }
 
-bool World::setup_world(void) {
+bool World::setup_world(long id) {
+    // Set worldid
+    worldid = id;
+
     // Check sock connect statue
     if (!this->is_connect()) {
         return false;
@@ -125,6 +151,9 @@ bool World::setup_world(void) {
     if (strncmp("connected!", connect_response->result().c_str(),
                 strlen("connected!"))) {
         this->fail_connect("Recv failed response");
+#ifdef DEBUG
+        cerr << "DEBUG: " << connect_response->result().c_str() << endl;
+#endif
         return false;
     }
 
@@ -140,8 +169,6 @@ bool World::setup_world(void) {
 #ifdef DEBUG
     cerr << "DEBUG: Recv WorldID: " << worldid << endl;
 #endif
-
-    cerr << "World: Connect Success!" << endl;
 
     return true;
 }

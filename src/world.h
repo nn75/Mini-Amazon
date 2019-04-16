@@ -20,20 +20,22 @@ class World {
     // world id, for test
     long worldid;
 
+    // Connect sock with server
+    bool setup_sock(const char *hostname);
     // Hand shake with server
-    bool setup_world(void);
+    bool setup_world(long id);
     // Change state into failed connection
     void fail_connect(const char *err_msg);
 
    public:
     // Constructor
     World(unsigned int n, Warehouse *houses);
+    // Disconnect from server
+    void disconnect();
     // Connect to server
-    void connect2world(const char *hostname);
+    bool connect(const char *hostname, long id = INVALID_ID);
     // Check whether world is connect
     bool is_connect();
     // Get worldid
     long get_worldid();
-    // Set worldid
-    void set_worldid(long id);
 };
