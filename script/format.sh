@@ -12,6 +12,9 @@ if [ $# != 1 ] ; then
 fi
 
 for f in $(ls $1/*.h $1/*.cpp); do
+    if [[ "$f" == *world_amazon.pb.* ]]; then
+        continue
+    fi
     echo "Formating: " $f
     tmpfile=$(mktemp /tmp/clang-format.XXXXXX)
     clang-format -style="{BasedOnStyle: Google, IndentWidth: 4}" $f > $tmpfile
