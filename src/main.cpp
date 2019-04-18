@@ -3,6 +3,7 @@
 
 #include "ups_communicator.h"
 #include "world_communicator.h"
+#include "recv_web.h"
 
 using namespace std;
 
@@ -15,16 +16,21 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
     long worldid_input = atoi(argv[1]);
-    cout << "\nworldid_input is:" << worldid_input;
+    cout << "\nworldid_input is:" << worldid_input << endl;
+
+    //Test for web connect
+    WebReceiver web_receiver;
+    web_receiver.connect();
+    web_receiver.disconnect();
 
     // Test for Ups socket
     // UpsCommunicator ups_communicator(0, NULL);
     // cout << "\nTest ups 1: Connect to vcm-8888.vcm.duke.edu" << endl;
     // ups_communicator.connect("vcm-8888.vcm.duke.edu");
 
-    Warehouse houses[3]{{1, 2, 3}, {2, 4, 6}, {3, 6, 9}};
+    // Warehouse houses[3]{{1, 2, 3}, {2, 4, 6}, {3, 6, 9}};
 
-    WorldCommunicator world_communicator(3, houses);
+    // WorldCommunicator world_communicator(3, houses);
 
     // Test for create world
     // for(int i = 0 ; i < 5 ; i++){
@@ -34,9 +40,9 @@ int main(int argc, char *argv[]) {
     // }
 
     // Test for connect to worldid told by ups
-    cout << "\nTest 3: Connect to 127.0.0.1 with input worldid" << endl;
-    world_communicator.connect("127.0.0.1", worldid_input);
-    world_communicator.disconnect();
+    // cout << "\nTest 3: Connect to 127.0.0.1 with input worldid" << endl;
+    // world_communicator.connect("127.0.0.1", worldid_input);
+    // world_communicator.disconnect();
 
     // cout << "\nTest 2: Connect to 127.0.0.1 with invalid worldid" << endl;
     // world_communicator.connect("127.0.0.1", 0xdeadbeef);

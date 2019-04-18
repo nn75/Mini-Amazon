@@ -24,3 +24,7 @@ https://github.com/yunjingliu96/world_simulator_exec
 Google protocal buffer tutorial:
 
 https://developers.google.com/protocol-buffers/docs/cpptutorial
+
+
+To test server running:
+nc -v 127.0.0.1 45678
