@@ -21,7 +21,7 @@ int main() {
     cout << "\nTest 2: Connect to 127.0.0.1 with invalid worldid" << endl;
     world_communicator.connect("127.0.0.1", 0xdeadbeef);
 
-    UpsCommunicator ups_communicator(3, houses);
+    UpsCommunicator ups_communicator(0, NULL);
 
     cout << "\nTest ups 1: Connect to vcm-8888.vcm.duke.edu" << endl;
     ups_communicator.connect("vcm-8888.vcm.duke.edu");
