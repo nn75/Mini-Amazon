@@ -12,6 +12,10 @@ LD_PRELOAD=/home/nn75/protobuf-3.7.1/lib/libprotobuf.so.18 ./debug
 To compile proto:
 protoc -I=. --cpp_out=. ./amazon_ups.proto
 
+
+To reset the world:
+docker system prune -a
+
 World simulater on the github:
 
 https://github.com/yunjingliu96/world_simulator_exec

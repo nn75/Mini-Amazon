@@ -13,6 +13,6 @@ UpsCommunicator::UpsCommunicator(unsigned int n, Warehouse *houses)
 bool UpsCommunicator::setup_world(long id) {
     // This method doesn't need id
     assert (id == INVALID_ID);
-    // Fill in your handshake code
+    // Fill in handshake code if needed
     return true;
 }
