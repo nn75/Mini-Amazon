@@ -12,7 +12,7 @@ if [ $# != 1 ] ; then
 fi
 
 for f in $(ls $1/*.h $1/*.cpp); do
-    if [[ "$f" == *world_amazon.pb.* ]]; then
+    if [[ "$f" == *.pb.* ]]; then
         continue
     fi
     echo "Formating: " $f

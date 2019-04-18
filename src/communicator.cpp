@@ -44,6 +44,12 @@ void Communicator::disconnect() {
 
 // Connect to target hostname with given worldid
 bool Communicator::connect(const char *hostname, long id) {
+    // Check current connection status first
+    if (this->is_connect()) {
+        this->fail_connect("Disconnect current connection first");
+        return false;
+    }
+
     // Connect socket with server
     if (!this->setup_sock(hostname)) {
         this->fail_connect("Setup socket failed");

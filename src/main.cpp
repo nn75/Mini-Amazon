@@ -7,18 +7,17 @@
 using namespace std;
 
 // This is only used for test class World
-int main(int argc, char *argv[]){
+int main(int argc, char *argv[]) {
     GOOGLE_PROTOBUF_VERIFY_VERSION;
 
-    if(argc!=2){
+    if (argc != 2) {
         printf("Syntax Error: ./test <worldid>\n");
         exit(EXIT_FAILURE);
     }
     long worldid_input = atoi(argv[1]);
-    cout << "\nworldid_input is:"<< worldid_input;
+    cout << "\nworldid_input is:" << worldid_input;
 
-
-    //Test for Ups socket
+    // Test for Ups socket
     // UpsCommunicator ups_communicator(0, NULL);
     // cout << "\nTest ups 1: Connect to vcm-8888.vcm.duke.edu" << endl;
     // ups_communicator.connect("vcm-8888.vcm.duke.edu");
@@ -27,20 +26,20 @@ int main(int argc, char *argv[]){
 
     WorldCommunicator world_communicator(3, houses);
 
-    //Test for create world
+    // Test for create world
     // for(int i = 0 ; i < 5 ; i++){
     //     cout << "\nTest 1: Connect to 127.0.0.1 without worldid" << endl;
     //     world_communicator.connect("127.0.0.1");
-    //     world_communicator.disconnect();        
+    //     world_communicator.disconnect();
     // }
 
-    //Test for connect to worldid told by ups
+    // Test for connect to worldid told by ups
     cout << "\nTest 3: Connect to 127.0.0.1 with input worldid" << endl;
     world_communicator.connect("127.0.0.1", worldid_input);
     world_communicator.disconnect();
 
-    //cout << "\nTest 2: Connect to 127.0.0.1 with invalid worldid" << endl;
-    //world_communicator.connect("127.0.0.1", 0xdeadbeef);
+    // cout << "\nTest 2: Connect to 127.0.0.1 with invalid worldid" << endl;
+    // world_communicator.connect("127.0.0.1", 0xdeadbeef);
 
     google::protobuf::ShutdownProtobufLibrary();
 }

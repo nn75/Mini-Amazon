@@ -1,6 +1,6 @@
+#include <assert.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 #include <google/protobuf/text_format.h>
-#include <assert.h> 
 
 #include "ups_communicator.h"
 
@@ -12,7 +12,7 @@ UpsCommunicator::UpsCommunicator(unsigned int n, Warehouse *houses)
 
 bool UpsCommunicator::setup_world(long id) {
     // This method doesn't need id
-    assert (id == INVALID_ID);
+    assert(id == INVALID_ID);
     // Fill in handshake code if needed
     return true;
 }
