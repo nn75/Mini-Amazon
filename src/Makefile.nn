@@ -17,4 +17,6 @@ debug: $(DBGOBJS)
 	$(CC) $(DBGCPPFLAGS) -o $@ -c $<
 clean:
 	rm *.o *.dbg.o test debug
+format:
+	../script/format.sh .
 
