@@ -1,6 +1,5 @@
 #ifndef _WAREHOUSE_H
 #define _WAREHOUSE_H
-#endif
 
 class Warehouse {
    private:
@@ -14,3 +13,5 @@ class Warehouse {
     int get_y();
     int get_id();
 };
+
+#endif

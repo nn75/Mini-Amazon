@@ -1,8 +1,6 @@
 #ifndef _COMMUNICATOR_H
 #define _COMMUNICATOR_H
-#endif
 
-#define PORT 23456
 #define INVALID_FD -1
 #define INVALID_ID -1
 
@@ -122,3 +120,5 @@ class Communicator {
         return recvMesgFrom(message, sock_fd);
     }
 };
+
+#endif
