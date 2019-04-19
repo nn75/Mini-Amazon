@@ -79,6 +79,7 @@ void Communicator::fail_connect(const char *err_msg) {
 bool Communicator::setup_sock(const char *hostname) {
     struct sockaddr_in address;
     struct sockaddr_in serv_addr;
+    struct hostent *hptr;
 
     // Create socket
     if ((sock_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
@@ -90,11 +91,12 @@ bool Communicator::setup_sock(const char *hostname) {
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(port);
 
-    // Convert IPv4 and IPv6 addresses from text to binary form
-    if (inet_pton(AF_INET, hostname, &serv_addr.sin_addr) <= 0) {
-        this->fail_connect("Invalid address/ Address not supported");
+    // Convert hostname to IPv4/IPv6 address
+    if ((hptr = gethostbyname(hostname)) == NULL) {
+        this->fail_connect("gethostbyname error for host");
         return false;
     }
+    memcpy(&serv_addr.sin_addr, hptr->h_addr_list[0], hptr->h_length);
 
     // Connect to server
     if (::connect(sock_fd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) <

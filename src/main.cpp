@@ -40,11 +40,11 @@ int main(int argc, char *argv[]) {
     // ups_communicator.connect("vcm-8888.vcm.duke.edu");
 
     // Test for create world
-    // for(int i = 0 ; i < 5 ; i++){
-    //     cout << "\nTest 1: Connect to 127.0.0.1 without worldid" << endl;
-    //     world_communicator.connect("127.0.0.1");
-    //     world_communicator.disconnect();
-    // }
+    for (int i = 0; i < 5; i++) {
+        cout << "\nTest 1: Connect to 127.0.0.1 without worldid" << endl;
+        world_communicator.connect("localhost");
+        world_communicator.disconnect();
+    }
 
     // Test for connect to worldid told by ups
     // cout << "\nTest 3: Connect to vcm-6873.vm.duke.edu with input worldid" <<
