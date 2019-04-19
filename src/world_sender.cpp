@@ -10,22 +10,22 @@
 
 #include "world_amazon.pb.h"
 #include "world_communicator.h"
+#include "message_queue.h"
+
 #include "world_sender.h"
 
 using namespace std;
 
-WorldSender::WorldSender(WorldCommunicator* wc) : w_communicator(wc) {
+WorldSender::WorldSender(WorldCommunicator* wc, message_queue<pair<int, ACommands> >& w_s_q) : w_communicator(wc), w_sender_queue(w_s_q), world_sender_thread(){
     // Other things initialize after add thread
     // world_sender_thread;
-    this->world_sender_thread = thread(&WorldSender::start_send_to_world, this);
+    cout << "start world sender thread:\n" << endl;
+    world_sender_thread = thread(&WorldSender::start_send_to_world, this);
 }
 
 void WorldSender::start_send_to_world() {
-    // while (1) {
-    //     if (shutdown) {
-    //         break;
-    //     }
-    //     ACommands message_to_world = w_sender_queue.popfront();
-    //     w_communicator->send_msg(message_to_world);
-    // }
+    while (1) {
+        ACommands message_to_world = w_sender_queue.popfront().second;
+        w_communicator->send_msg(message_to_world);
+    }
 }

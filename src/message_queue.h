@@ -1,5 +1,5 @@
-#ifndef __M_QUEUE__
-#define __M_QUEUE__
+#ifndef __MESSAGE_QUEUE__
+#define __MESSAGE_QUEUE__
 
 #include <deque>
 #include <iostream>
@@ -21,20 +21,23 @@ class message_queue {
     int dq_size;
     /////////////////////////////////
     /// Public members start here
+    int next_send;
     /////////////////////////////////
    public:
     // Constructor
-    message_queue() : dq(), m(), pos(0), dq_size(0){};
+    message_queue() : dq(), m(), pos(0), dq_size(0),next_send(0){};
     // Check existence of message and its position
     bool contain(T value);
     // Check if message_queue is emoty
-    bool whether_empty();
+    bool if_empty();
     // push to back of queue
     void pushback(T value);
     // pop front and then pushback
     T popfront();
     // Remove acked message
     T front();
+    // Send next message
+    T send_next();
     // Destructor
     ~message_queue(){};
 };
@@ -52,7 +55,7 @@ bool message_queue<T>::contain(T value) {
 }
 
 template <class T>
-bool message_queue<T>::whether_empty() {
+bool message_queue<T>::if_empty() {
     lock_guard<mutex> lock(m);
     return (dq_size != 0);
 }
@@ -65,11 +68,22 @@ void message_queue<T>::pushback(T value) {
 }
 
 template <class T>
+T message_queue<T>::send_next() {
+    lock_guard<mutex> lock(m);
+    if(next_send != dq_size){
+        next_send++;
+        return dq[next_send-1];
+    }
+}
+
+template <class T>
 T message_queue<T>::popfront() {
     lock_guard<mutex> lock(m);
     T deque_head = dq.front();
-    dq.pop();
+    dq.pop_front();
     dq_size--;
+    if(next_send>0)
+        next_send--;
     return deque_head;
 }
 

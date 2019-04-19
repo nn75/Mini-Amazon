@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
     Warehouse houses[3]{{1, 2, 3}, {2, 4, 6}, {3, 6, 9}};
     WorldCommunicator world_communicator(3, houses);
 
-    WorldSender w_sender(&world_communicator);
+    //WorldSender w_sender(&world_communicator);
 
     // Test for web connect
     // WebReceiver web_receiver;
