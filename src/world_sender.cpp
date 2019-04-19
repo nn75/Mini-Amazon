@@ -8,15 +8,17 @@
 #include <iostream>
 #include <string>
 
+#include "message_queue.h"
 #include "world_amazon.pb.h"
 #include "world_communicator.h"
-#include "message_queue.h"
 
 #include "world_sender.h"
 
 using namespace std;
 
-WorldSender::WorldSender(WorldCommunicator* wc, message_queue<pair<int, ACommands> >& w_s_q) : w_communicator(wc), w_sender_queue(w_s_q), world_sender_thread(){
+WorldSender::WorldSender(WorldCommunicator* wc,
+                         message_queue<pair<int, ACommands> >& w_s_q)
+    : w_communicator(wc), w_sender_queue(w_s_q), world_sender_thread() {
     // Other things initialize after add thread
     // world_sender_thread;
     cout << "start world sender thread:\n" << endl;

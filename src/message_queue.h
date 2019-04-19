@@ -25,7 +25,7 @@ class message_queue {
     /////////////////////////////////
    public:
     // Constructor
-    message_queue() : dq(), m(), pos(0), dq_size(0),next_send(0){};
+    message_queue() : dq(), m(), pos(0), dq_size(0), next_send(0){};
     // Check existence of message and its position
     bool contain(T value);
     // Check if message_queue is emoty
@@ -70,9 +70,9 @@ void message_queue<T>::pushback(T value) {
 template <class T>
 T message_queue<T>::send_next() {
     lock_guard<mutex> lock(m);
-    if(next_send != dq_size){
+    if (next_send != dq_size) {
         next_send++;
-        return dq[next_send-1];
+        return dq[next_send - 1];
     }
 }
 
@@ -82,8 +82,7 @@ T message_queue<T>::popfront() {
     T deque_head = dq.front();
     dq.pop_front();
     dq_size--;
-    if(next_send>0)
-        next_send--;
+    if (next_send > 0) next_send--;
     return deque_head;
 }
 

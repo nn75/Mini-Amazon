@@ -3,7 +3,8 @@
 
 #include "communicator.h"
 
-//worldworker(w_send_queue, w_recv_queue, ups_send_queue, world_sender, world_receiver, world_communicator,seq)
+// worldworker(w_send_queue, w_recv_queue, ups_send_queue, world_sender,
+// world_receiver, world_communicator,seq)
 class WorldProcessor {
     /////////////////////////////////
     /// Private members start here

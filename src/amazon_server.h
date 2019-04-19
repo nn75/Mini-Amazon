@@ -3,7 +3,7 @@
 
 #include "communicator.h"
 
-//Server(w_send_queue, w_recv_queue, ups_send_queue, worldworker)
+// Server(w_send_queue, w_recv_queue, ups_send_queue, worldworker)
 class AmazonServer {
     /////////////////////////////////
     /// Private members start here

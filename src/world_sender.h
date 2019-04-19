@@ -3,8 +3,8 @@
 
 #include <thread>
 
-#include "world_communicator.h"
 #include "world_amazon.pb.h"
+#include "world_communicator.h"
 
 #include "message_queue.h"
 
@@ -27,7 +27,8 @@ class WorldSender {
     /////////////////////////////////
    public:
     // Constructor
-    WorldSender(WorldCommunicator* wc, message_queue<pair<int, ACommands> >& w_s_q);
+    WorldSender(WorldCommunicator* wc,
+                message_queue<pair<int, ACommands> >& w_s_q);
     // Start receving from web
     void start_send_to_world();
 };
