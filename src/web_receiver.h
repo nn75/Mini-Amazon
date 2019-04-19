@@ -1,7 +1,6 @@
 #ifndef _WEBRECEIVER_H
 #define _WEBRECEIVER_H
 
-
 #define INVALID_FD -1
 #define INVALID_WEB_FD -1
 
@@ -11,7 +10,7 @@ class WebReceiver {
     /////////////////////////////////
    private:
     int sock_fd;
-    
+
     int web_client_fd;
     // communicator type
     const char *type;
@@ -30,11 +29,10 @@ class WebReceiver {
     void disconnect();
     // Connect web
     bool connect();
-    //Start receving from web
+    // Start receving from web
     void start_recv();
-    //Parse info received from web
+    // Parse info received from web
     void get_buy_info();
-
 };
 
 #endif

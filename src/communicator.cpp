@@ -103,5 +103,4 @@ bool Communicator::setup_sock(const char *hostname) {
         return false;
     }
     return true;
-
 }

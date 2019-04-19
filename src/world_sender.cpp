@@ -9,23 +9,23 @@
 #include <string>
 
 #include "world_amazon.pb.h"
-#include "world_sender.h"
 #include "world_communicator.h"
+#include "world_sender.h"
 
 using namespace std;
 
-WorldSender::WorldSender(WorldCommunicator* wc):w_communicator(wc){
-    //Other things initialize after add thread
-    //world_sender_thread;
+WorldSender::WorldSender(WorldCommunicator* wc) : w_communicator(wc) {
+    // Other things initialize after add thread
+    // world_sender_thread;
     this->world_sender_thread = thread(&WorldSender::start_send_to_world, this);
 }
 
-void WorldSender::start_send_to_world(){
-    while(1){
-        if(shutdown){
+void WorldSender::start_send_to_world() {
+    while (1) {
+        if (shutdown) {
             break;
         }
-        ACommands message_to_world = w_sender_queue.popfront(); 
+        ACommands message_to_world = w_sender_queue.popfront();
         w_communicator->send_msg(message_to_world);
     }
 }

@@ -52,7 +52,7 @@ bool message_queue<T>::contain(T value) {
     return false;
 }
 
-bool message_queue<T>::whether_empty(){
+bool message_queue<T>::whether_empty() {
     lock_guard<mutex> lock(m);
     return (dq_size != 0);
 }
