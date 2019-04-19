@@ -8,7 +8,6 @@
 using namespace std;
 
 template <class T>
-
 class message_queue {
     /////////////////////////////////
     /// Private methods start here
@@ -35,7 +34,7 @@ class message_queue {
     // pop front and then pushback
     T popfront();
     // Remove acked message
-    T front(T& value);
+    T front();
     // Destructor
     ~message_queue(){};
 };
@@ -52,6 +51,7 @@ bool message_queue<T>::contain(T value) {
     return false;
 }
 
+template <class T>
 bool message_queue<T>::whether_empty() {
     lock_guard<mutex> lock(m);
     return (dq_size != 0);

@@ -21,11 +21,11 @@ WorldSender::WorldSender(WorldCommunicator* wc) : w_communicator(wc) {
 }
 
 void WorldSender::start_send_to_world() {
-    while (1) {
-        if (shutdown) {
-            break;
-        }
-        ACommands message_to_world = w_sender_queue.popfront();
-        w_communicator->send_msg(message_to_world);
-    }
+    // while (1) {
+    //     if (shutdown) {
+    //         break;
+    //     }
+    //     ACommands message_to_world = w_sender_queue.popfront();
+    //     w_communicator->send_msg(message_to_world);
+    // }
 }

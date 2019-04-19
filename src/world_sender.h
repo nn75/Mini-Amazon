@@ -23,7 +23,7 @@ class WorldSender {
     /////////////////////////////////
    public:
     // Constructor
-    WorldSender(WorldCommunicator& wc);
+    WorldSender(WorldCommunicator* wc);
     // Start receving from web
     void start_send_to_world();
 };

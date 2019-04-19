@@ -1,8 +1,10 @@
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 #include <google/protobuf/text_format.h>
 
+#include "mqueue.h"
 #include "ups_communicator.h"
 #include "web_receiver.h"
+#include "world_amazon.pb.h"
 #include "world_communicator.h"
 #include "world_sender.h"
 
@@ -25,7 +27,7 @@ int main(int argc, char *argv[]) {
     Warehouse houses[3]{{1, 2, 3}, {2, 4, 6}, {3, 6, 9}};
     WorldCommunicator world_communicator(3, houses);
 
-    WorldSender w_sender(world_communicator);
+    WorldSender w_sender(&world_communicator);
 
     // Test for web connect
     // WebReceiver web_receiver;

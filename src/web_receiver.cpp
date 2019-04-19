@@ -77,7 +77,8 @@ bool WebReceiver::setup_sock() {
 
     int yes = 1;
     status = setsockopt(sock_fd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int));
-    status = bind(sock_fd, host_info_list->ai_addr, host_info_list->ai_addrlen);
+    status =
+        ::bind(sock_fd, host_info_list->ai_addr, host_info_list->ai_addrlen);
     if (status == -1) {
         this->fail_connect("Cannot bind web socket");
         return false;
