@@ -6,7 +6,7 @@
 #include <iostream>
 #include <string>
 
-#include "recv_web.h"
+#include "web_receiver.h"
 
 using namespace std;
 

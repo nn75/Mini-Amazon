@@ -1,24 +1,35 @@
-//Note: portnumber: 34567
-// we assume each buy request contains only one product (the truck go to one harehouse for each request)
-//A->U
+//Note: port number: 34567
+// we temporarily assume each buy request contains only one product (the truck go to one warehouse for each request)
+// When Amazon send an ‘Order’ info, the UPS username is included. (for simplicity we temporarily assume the UPS username is valid) 
+// TODO: after Amazon initialize warehouses, Amazon should send all warehouse info to UPS
+
 syntax = "proto2";
+//A->U
+
+message Product {
+	required int32 id = 1;
+	required string description = 2;
+	required int32 amount = 3;
+}
 
 message Order{
 	required int32 whid = 1;
 	required int32 x = 2;
 	required int32 y = 3;
 	required int64 packageid = 4;
-	required int64 seqnum = 5;
+	required string upsusername = 5; 
+required Product item = 6; 
+	required int64 seqnum = 7;
 }
 
 message Load{
 	required bool isloading = 1;
 	required int64 packageid = 2;
-	required int64 seqnum = 3;
+	required int64 seqnum = 3; 
 }
 
 message Deliver{
-	required int64 packageid = 1;
+	required packageid = 1;
 	required int64 seqnum = 2;
 }
 
@@ -27,18 +38,24 @@ message ConnectedWorld{
 	required int64 seqnum = 2;
 }
 
+message User {
+	requirred int64 userid = 1;
+	required string username = 2;
+	required string password = 3;
+}
+
 message AUCommands{
-	optional ConnectedWorld connected = 1;
-	repeated Order order = 2;
-	repeated Load loading = 3;
-	repeated Deliver todeliver = 4;
-	repeated int64 acks = 5;
+	// optional ConnectedWorld connected = 1;
+	repeated Order order = 1;
+	// repeated Load loading = 2; 
+	repeated Deliver todeliver = 2;
+	repeated int64 acks = 3;
 }
 
 
 //U->A
 message Truck{
-  required int32 whnum = 1;
+  required int32 whid = 1;
   required int32 truckid = 2;
   required int64 packageid = 3;
   required int64 seqnum = 4;
@@ -58,8 +75,8 @@ message Delivered{
 }
 
 message UACommands{
-repeated ConnectWorld toconnect = 1;
-	repeated Truck arrived = 2;
-	repeated Delivered finish = 3;
-	repeated int64 acks = 4;
+// repeated ConnectWorld toconnect = 1;
+	repeated Truck arrived = 1;
+	repeated Delivered finish = 2;
+	repeated int64 acks = 3;
 }

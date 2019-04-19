@@ -102,6 +102,6 @@ bool Communicator::setup_sock(const char *hostname) {
         this->fail_connect("Connect failed");
         return false;
     }
-
     return true;
+
 }

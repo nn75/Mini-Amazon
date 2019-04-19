@@ -16,42 +16,30 @@ class message_queue {
    private:
     deque<T> dq;
     mutable mutex m;
-    // The postion of
+    // The postion of message
     int pos;
+    // The size of message_queue
+    int dq_size;
     /////////////////////////////////
     /// Public members start here
     /////////////////////////////////
    public:
     // Constructor
-    message_queue() : dq(), m(), pos(0){};
+    message_queue() : dq(), m(), pos(0), dq_size(0){};
+    // Check existence of message and its position
+    bool contain(T value);
+    // Check if message_queue is emoty
+    bool whether_empty();
     // push to back of queue
     void pushback(T value);
     // pop front and then pushback
-    bool popfront(T& value);
-    // Check existence of message and its position
-    bool contain(T value);
+    T popfront();
     // Remove acked message
-    bool front(T& value);
+    T front(T& value);
     // Destructor
     ~message_queue(){};
 };
-template <class T>
-void message_queue<T>::pushback(T value) {
-    lock_guard<mutex> lock(m);
-    dq.push_back(value);
-}
-template <class T>
-bool message_queue<T>::popfront(T& value) {
-    lock_guard<mutex> lock(m);
-    if (dq.empty()) {
-        return false;
-        cout << "message queue is emtpy" << endl;
-    } else {
-        value = dq.front();
-        dq.pop_front();
-        return true;
-    }
-}
+
 template <class T>
 bool message_queue<T>::contain(T value) {
     lock_guard<mutex> lock(m);
@@ -63,16 +51,32 @@ bool message_queue<T>::contain(T value) {
     }
     return false;
 }
-template <class T>
-bool message_queue<T>::front(T& value) {
+
+bool message_queue<T>::whether_empty(){
     lock_guard<mutex> lock(m);
-    if (dq.empty()) {
-        return false;
-        cout << "message queue is emtpy" << endl;
-    } else {
-        value = dq.front();
-        return true;
-    }
+    return (dq_size != 0);
+}
+
+template <class T>
+void message_queue<T>::pushback(T value) {
+    lock_guard<mutex> lock(m);
+    dq.push_back(value);
+    dq_size++;
+}
+
+template <class T>
+T message_queue<T>::popfront() {
+    lock_guard<mutex> lock(m);
+    T deque_head = dq.front();
+    dq.pop();
+    dq_size--;
+    return deque_head;
+}
+
+template <class T>
+T message_queue<T>::front() {
+    lock_guard<mutex> lock(m);
+    return dq.front();
 }
 
 #endif
