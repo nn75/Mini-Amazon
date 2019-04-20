@@ -42,8 +42,9 @@ void WorldProcessor::world_command_process(){
                         send_world_queue.pushback(temp);
                         seq = send_world_queue.front().first;
                     }
-                    if(send_world_queue.next_send == 0)
-                            break;
+                    if(send_world_queue.next_send == 0){
+                        break;  
+                    }
                     send_world_queue.popfront(temp);
                 }
             }
