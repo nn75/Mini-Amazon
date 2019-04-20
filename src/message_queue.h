@@ -78,6 +78,7 @@ T message_queue<T>::send_next() {
         next_send++;
         return dq[next_send - 1];
     }
+    assert(0);
 }
 
 template <class T>

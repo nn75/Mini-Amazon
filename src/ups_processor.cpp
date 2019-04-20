@@ -1,9 +1,9 @@
 #include "ups_processor.h"
 
 using namespace std;
-UpsProcessor::UpsProcessor(message_queue<pair<long int, ACommands> >& mq1,
+UpsProcessor::UpsProcessor(message_queue<pair<long int, ACommands>>& mq1,
                            message_queue<UACommands>& mq2,
-                           message_queue<pair<long int , AUCommands>>& mq3,
+                           message_queue<pair<long int, AUCommands>>& mq3,
                            UpsCommunicator* ups_communicator, long int& wnum,
                            long int& unum, mutex& mt)
     : send_world_queue(mq1),

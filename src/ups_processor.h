@@ -33,8 +33,9 @@ class UpsProcessor {
     /// Private members start here
     /////////////////////////////////
    public:
-    UpsProcessor(message_queue<pair<long int, ACommands> >& mq1,
-                 message_queue<UACommands>& mq2, message_queue<pair<long int, AUCommands>>& mq3,
+    UpsProcessor(message_queue<pair<long int, ACommands>>& mq1,
+                 message_queue<UACommands>& mq2,
+                 message_queue<pair<long int, AUCommands>>& mq3,
                  UpsCommunicator* ups_communicator, long int& wnum,
                  long int& unum, mutex& mt);
     ~UpsProcessor(){};
