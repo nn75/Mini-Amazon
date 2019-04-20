@@ -9,6 +9,7 @@
 #include <string>
 
 #include "amazon_ups.pb.h"
+#include "communicator.h"
 #include "message_queue.h"
 #include "ups_communicator.h"
 

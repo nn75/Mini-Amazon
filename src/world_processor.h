@@ -6,10 +6,10 @@
 #include <iostream>
 #include <thread>
 #include "amazon_ups.pb.h"
-#include "communicator.h"
+#include "receiver.h"
+#include "sender.h"
 #include "world_amazon.pb.h"
-#include "world_receiver.h"
-#include "world_sender.h"
+#include "world_communicator.h"
 
 using namespace std;
 
@@ -24,8 +24,8 @@ class WorldProcessor {
     message_queue<pair<long int, ACommands> >& send_world_queue;
     message_queue<AResponses>& recv_world_queue;
     message_queue<AUCommands>& send_ups_queue;
-    WorldSender world_sender;
-    WorldReceiver world_receiver;
+    Sender<ACommands> world_sender;
+    Receiver<AResponses> world_receiver;
     long int& world_seqnum;
     long int& ups_seqnum;
     mutex& mtx;

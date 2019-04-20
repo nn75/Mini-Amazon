@@ -1,0 +1,46 @@
+#ifndef _SENDER_H
+#define _SENDER_H
+
+#include <thread>
+
+#include "communicator.h"
+#include "message_queue.h"
+
+template <class T>
+class Sender {
+    /////////////////////////////////
+    /// Private members start here
+    /////////////////////////////////
+   private:
+    Communicator* communicator;
+    // message_queue for sending
+    message_queue<pair<long int, T>>& sender_queue;
+    // message_queue<T> sender_queue;
+    thread sender_thread;
+
+    /////////////////////////////////
+    /// Public members start here
+    /////////////////////////////////
+   public:
+    // Constructor
+    Sender<T>(Communicator* c, message_queue<pair<long int, T>>& s_q)
+        : communicator(c), sender_queue(s_q) {
+        cout << "start sender thread" << endl;
+        sender_thread = thread(&Sender<T>::start_sending, this);
+    };
+    // Start receving from web
+    void start_sending();
+};
+
+template <class T>
+void Sender<T>::start_sending() {
+    while (1) {
+        T message = sender_queue.send_next().second;
+        if (!communicator->send_msg(message)) {
+            cout << "Message sending failed" << endl;
+            break;
+        }
+    }
+}
+
+#endif
