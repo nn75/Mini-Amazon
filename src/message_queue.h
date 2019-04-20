@@ -1,5 +1,5 @@
-#ifndef __MESSAGE_QUEUE__
-#define __MESSAGE_QUEUE__
+#ifndef __MESSAGEQUEUE__
+#define __MESSAGEQUEUE__
 
 #include <deque>
 #include <iostream>
@@ -18,22 +18,23 @@ class message_queue {
     // The postion of message
     int pos;
     // The size of message_queue
-    int dq_size;
+    
     /////////////////////////////////
     /// Public members start here
-    int next_send;
     /////////////////////////////////
    public:
+    int dq_size;
+    int next_send;
     // Constructor
-    message_queue() : dq(), m(), pos(0), dq_size(0), next_send(0){};
+    message_queue() : dq(), m(), pos(0), dq_size(0),next_send(0){};
     // Check existence of message and its position
-    bool contain(T value);
+    int where(T value);
     // Check if message_queue is emoty
     bool if_empty();
     // push to back of queue
     void pushback(T value);
     // pop front and then pushback
-    T popfront();
+    bool popfront(T & value);
     // Remove acked message
     T front();
     // Send next message
@@ -43,21 +44,24 @@ class message_queue {
 };
 
 template <class T>
-bool message_queue<T>::contain(T value) {
+int message_queue<T>::where(T value) {
     lock_guard<mutex> lock(m);
     for (int i = 0; i < dq.size(); i++) {
         if (dq[i] == value) {
             pos = i;
-            return true;
+            return pos;
         }
     }
-    return false;
+    return -1;
 }
 
 template <class T>
 bool message_queue<T>::if_empty() {
     lock_guard<mutex> lock(m);
-    return (dq_size != 0);
+    if(dq_size == 0)
+        return true;
+    else 
+        return false;
 }
 
 template <class T>
@@ -70,20 +74,21 @@ void message_queue<T>::pushback(T value) {
 template <class T>
 T message_queue<T>::send_next() {
     lock_guard<mutex> lock(m);
-    if (next_send != dq_size) {
+    if(next_send != dq_size){
         next_send++;
-        return dq[next_send - 1];
+        return dq[next_send-1];
     }
 }
 
 template <class T>
-T message_queue<T>::popfront() {
+bool message_queue<T>::popfront(T & value) {
     lock_guard<mutex> lock(m);
-    T deque_head = dq.front();
+    value = dq.front();
     dq.pop_front();
     dq_size--;
-    if (next_send > 0) next_send--;
-    return deque_head;
+    if(next_send>0)
+        next_send--;
+    return true;
 }
 
 template <class T>

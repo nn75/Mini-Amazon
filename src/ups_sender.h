@@ -1,24 +1,36 @@
-#ifndef _WEBRECEIVER_H
-#define _WEBRECEIVER_H
+#ifndef _UPSSENDER_H
+#define _UPSSENDER_H
 
-class UpsReceiver {
+#include <thread>
+
+#include "amazon_ups.pb.h"
+#include "ups_communicator.h"
+
+#include "message_queue.h"
+
+using namespace std;
+
+class UpsSender {
     /////////////////////////////////
     /// Private members start here
     /////////////////////////////////
    private:
     // For send and receive from ups
-    UpsCommunicator* ups_communicator;
-
-    // std::thread thread;
+    UpsCommunicator* u_communicator;
+    // message_queue for sending to world
+    message_queue<pair<long int, AUCommands> >& u_sender_queue;
+    // message_queue<ACommands> w_sender_queue;
+    thread ups_sender_thread;
 
     /////////////////////////////////
     /// Public members start here
     /////////////////////////////////
    public:
     // Constructor
-    UpsReceiver();
+    UpsSender(UpsCommunicator* uc,
+                message_queue<pair<long int, AUCommands> >& u_s_q);
     // Start receving from web
-    void start_recv_ups();
+    void start_send_to_ups();
 };
 
 #endif
