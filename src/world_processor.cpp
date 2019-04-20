@@ -1,17 +1,18 @@
 #include "world_processor.h"
 
 using namespace std;
-WorldProcessor::WorldProcessor(message_queue<pair<long int, ACommands> >& mq1,
-                               message_queue<AResponses>& mq2,
-                               message_queue<AUCommands>& mq3,
-                               WorldCommunicator* world_communicator,
-                               long int& wnum, long int& unum, mutex& mt)
-    : send_world_queue(mq1),
-      recv_world_queue(mq2),
-      send_ups_queue(mq3),
+WorldProcessor::WorldProcessor(
+    message_queue<pair<long int, ACommands> >& s_w_q,
+    message_queue<AResponses>& r_w_q,
+    message_queue<pair<long int, AUCommands> >& s_u_q,
+    WorldCommunicator* world_communicator, long int& wnum, long int& unum,
+    mutex& mt)
+    : send_world_queue(s_w_q),
+      recv_world_queue(r_w_q),
+      send_ups_queue(s_u_q),
 
-      world_sender(world_communicator, mq1),
-      world_receiver(world_communicator, mq2),
+      world_sender(world_communicator, s_w_q),
+      world_receiver(world_communicator, r_w_q),
       world_seqnum(wnum),
       ups_seqnum(unum),
       mtx(mt),

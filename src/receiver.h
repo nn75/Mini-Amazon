@@ -33,6 +33,7 @@ class Receiver {
 
 template <class T>
 void Receiver<T>::start_receiving() {
+    cout << "start sender thread" << endl;
     while (1) {
         T message;
         if (!communicator->recv_msg(message)) {

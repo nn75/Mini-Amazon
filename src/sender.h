@@ -16,7 +16,7 @@ class Sender {
     Communicator* communicator;
     // message_queue for sending
     message_queue<pair<long int, T>>& sender_queue;
-    // message_queue<T> sender_queue;
+    // Thread for sending to world
     thread sender_thread;
 
     /////////////////////////////////
@@ -26,7 +26,6 @@ class Sender {
     // Constructor
     Sender<T>(Communicator* c, message_queue<pair<long int, T>>& s_q)
         : communicator(c), sender_queue(s_q) {
-        cout << "start sender thread" << endl;
         sender_thread = thread(&Sender<T>::start_sending, this);
     };
     // Start receving from web
@@ -35,6 +34,7 @@ class Sender {
 
 template <class T>
 void Sender<T>::start_sending() {
+    cout << "start sender thread" << endl;
     while (1) {
         if (sender_queue.if_empty()) {
             usleep(100000);

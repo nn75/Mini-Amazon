@@ -5,43 +5,45 @@
 #include <cstring>
 #include <iostream>
 #include <string>
+#include <thread>
 
-#include "web_receiver.h"
+#include "web_processor.h"
 
 using namespace std;
 
 // Constructor for Communicator
-WebReceiver::WebReceiver() {
+WebProcessor::WebProcessor(message_queue<pair<long int, AUCommands> > &s_u_q,
+                           long int &unum, mutex &mt)
+    : send_ups_queue(s_u_q), ups_seqnum(unum), mtx(mt) {
     sock_fd = INVALID_FD;
     web_client_fd = INVALID_WEB_FD;
     type = "Web";
 }
 
 // Connect and start receiving
-bool WebReceiver::connect() {
+bool WebProcessor::connect() {
     // Connect socket with server
     if (!this->setup_sock()) {
         this->fail_connect("Setup web socket failed");
         return false;
     }
-    cerr << type << ": Connect and Success!" << endl;
 
     // For testing
-    this->start_recv();
+    // this->start_recv();
 
     // For thread
-    // this->web_recv_thread = std::thread(&WebReceiver::start_start_recv(),
-    // this);
+    web_recevier_thread = thread(&WebProcessor::start_recv, this);
+    cout << "Start web recevier thread\n";
 
     return true;
 }
 
-void WebReceiver::fail_connect(const char *err_msg) {
+void WebProcessor::fail_connect(const char *err_msg) {
     cerr << type << " Err:  " << err_msg << endl;
     this->disconnect();
 }
 
-void WebReceiver::disconnect() {
+void WebProcessor::disconnect() {
     if (sock_fd != INVALID_FD) {
         close(sock_fd);
     }
@@ -49,7 +51,7 @@ void WebReceiver::disconnect() {
 }
 
 // Set up socket with web
-bool WebReceiver::setup_sock() {
+bool WebProcessor::setup_sock() {
     int status;
     struct addrinfo host_info;
     struct addrinfo *host_info_list;
@@ -83,19 +85,18 @@ bool WebReceiver::setup_sock() {
         this->fail_connect("Cannot bind web socket");
         return false;
     }
-
     status = listen(sock_fd, 100);
     if (status == -1) {
         this->fail_connect("Cannot listen on web socket");
         return false;
     }
+    cout << "WebReceiver listening for connection\n";
 
     return true;
 }
 
 // Start receving from web
-void WebReceiver::start_recv() {
-    cout << "\nWebReceiver listening for connection";
+void WebProcessor::start_recv() {
     struct sockaddr_storage socket_addr;
     socklen_t socket_addr_len = sizeof(socket_addr);
     while (1) {
@@ -104,15 +105,47 @@ void WebReceiver::start_recv() {
         if (web_client_fd != -1) {
             this->get_buy_info();
             web_client_fd = INVALID_WEB_FD;
+        } else {
+            cout << "One user: Connect Success!" << endl;
         }
     }
 }
 
+vector<string> WebProcessor::split(const string &str, const string &sep) {
+    vector<string> tokens;
+    size_t prev = 0, pos = 0;
+    do {
+        pos = str.find(sep, prev);
+        if (pos == string::npos) {
+            pos = str.length();
+        }
+        string token = str.substr(prev, pos - prev);
+        if (!token.empty()) {
+            tokens.push_back(token);
+        }
+        prev = pos + sep.length();
+    } while (pos < str.length() && prev < str.length());
+    return tokens;
+}
+
 // Parse info received from web
-void WebReceiver::get_buy_info() {
+void WebProcessor::get_buy_info() {
     char buffer[2048];
     memset(buffer, 0, sizeof(buffer));
 
     recv(web_client_fd, buffer, 2048, 0);
-    cout << "\nInfo Amazon received from web: " << buffer << endl;
+
+    string info(buffer);
+    vector<string> tokens = split(info, "/");
+    string tracking_number = tokens[0];
+    string ups_account = tokens[1];
+
+    cout << "\nTracking number: " << tracking_number
+         << "\nUPS account: " << ups_account << endl;
+
+
+
+    //Insert new order to order table
+
+    
 }

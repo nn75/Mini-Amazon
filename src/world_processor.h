@@ -24,7 +24,7 @@ class WorldProcessor {
     // target's port number
     message_queue<pair<long int, ACommands> >& send_world_queue;
     message_queue<AResponses>& recv_world_queue;
-    message_queue<AUCommands>& send_ups_queue;
+    message_queue<pair<long int, AUCommands> >& send_ups_queue;
     Sender<ACommands> world_sender;
     Receiver<AResponses> world_receiver;
     long int& world_seqnum;
@@ -37,7 +37,7 @@ class WorldProcessor {
    public:
     WorldProcessor(message_queue<pair<long int, ACommands> >& mq1,
                    message_queue<AResponses>& mq2,
-                   message_queue<AUCommands>& mq3,
+                   message_queue<pair<long int, AUCommands> >& mq3,
                    WorldCommunicator* world_communicator, long int& wnum,
                    long int& unum, mutex& mt);
     ~WorldProcessor(){};
