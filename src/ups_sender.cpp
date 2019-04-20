@@ -9,15 +9,14 @@
 #include <string>
 
 #include "amazon_ups.pb.h"
-#include "ups_communicator.h"
 #include "message_queue.h"
+#include "ups_communicator.h"
 
 #include "ups_sender.h"
 
 using namespace std;
 
-UpsSender::UpsSender(UpsCommunicator* uc,
-                         message_queue<AUCommands>& w_s_q)
+UpsSender::UpsSender(UpsCommunicator* uc, message_queue<AUCommands>& w_s_q)
     : u_communicator(uc), u_sender_queue(w_s_q), ups_sender_thread() {
     // Other things initialize after add thread
     // ups_sender_thread;
