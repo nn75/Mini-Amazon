@@ -58,7 +58,7 @@ int message_queue<T>::where(T value) {
 template <class T>
 bool message_queue<T>::if_empty() {
     lock_guard<mutex> lock(m);
-    if (dq_size == 0)
+    if (dq_size == next_send)
         return true;
     else
         return false;

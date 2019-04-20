@@ -1,6 +1,7 @@
 #ifndef _SENDER_H
 #define _SENDER_H
 
+#include <unistd.h>
 #include <thread>
 
 #include "communicator.h"
@@ -35,6 +36,10 @@ class Sender {
 template <class T>
 void Sender<T>::start_sending() {
     while (1) {
+        if (sender_queue.if_empty()) {
+            usleep(100000);
+            continue;
+        }
         T message = sender_queue.send_next().second;
         if (!communicator->send_msg(message)) {
             cout << "Message sending failed" << endl;
