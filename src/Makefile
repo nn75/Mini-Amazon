@@ -1,4 +1,4 @@
-CC=g++
+CC=clang++
 CPPFLAGS=-std=c++11 -O3
 DBGCPPFLAGS=-std=c++11 -g -DDEBUG
 SRCS=$(wildcard *.cpp)

@@ -28,7 +28,7 @@ class UpsSender {
    public:
     // Constructor
     UpsSender(UpsCommunicator* uc,
-                message_queue<pair<long int, AUCommands> >& u_s_q);
+              message_queue<pair<long int, AUCommands> >& u_s_q);
     // Start receving from web
     void start_send_to_ups();
 };

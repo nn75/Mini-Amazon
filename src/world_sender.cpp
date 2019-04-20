@@ -8,9 +8,9 @@
 #include <iostream>
 #include <string>
 
+#include "message_queue.h"
 #include "world_amazon.pb.h"
 #include "world_communicator.h"
-#include "message_queue.h"
 
 #include "world_sender.h"
 
@@ -28,7 +28,7 @@ WorldSender::WorldSender(WorldCommunicator* wc,
 void WorldSender::start_send_to_world() {
     while (1) {
         ACommands message_to_world = w_sender_queue.send_next().second;
-        if(!w_communicator->send_msg( message_to_world)){
+        if (!w_communicator->send_msg(message_to_world)) {
             cout << "Send to world failed\n";
             break;
         }

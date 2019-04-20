@@ -28,8 +28,7 @@ class WorldReceiver {
    public:
     // Constructor
     WorldReceiver();
-    WorldReceiver(WorldCommunicator* wc,
-                message_queue<AResponses>& w_r_q);
+    WorldReceiver(WorldCommunicator* wc, message_queue<AResponses>& w_r_q);
     // Start receving from web
     void start_send_to_world();
 };

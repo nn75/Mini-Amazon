@@ -8,16 +8,16 @@
 #include <iostream>
 #include <string>
 
+#include "message_queue.h"
 #include "world_amazon.pb.h"
 #include "world_communicator.h"
-#include "message_queue.h"
 
 #include "world_receiver.h"
 
 using namespace std;
 
 WorldReceiver::WorldReceiver(WorldCommunicator* wc,
-                         message_queue<AResponses>& w_r_q)
+                             message_queue<AResponses>& w_r_q)
     : w_communicator(wc), w_recv_queue(w_r_q), world_receiver_thread() {
     // Other things initialize after add thread
     // world_sender_thread;
