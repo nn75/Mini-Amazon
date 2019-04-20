@@ -15,11 +15,11 @@ class WorldReceiver {
     /// Private members start here
     /////////////////////////////////
    private:
-    // For send and receive from ups
+    // For send and receive from world
     WorldCommunicator* w_communicator;
     // message_queue for sending to world
     message_queue<AResponses>& w_recv_queue;
-    // message_queue<ACommands> w_sender_queue;
+
     thread world_receiver_thread;
 
     /////////////////////////////////
@@ -29,7 +29,7 @@ class WorldReceiver {
     // Constructor
     WorldReceiver();
     WorldReceiver(WorldCommunicator* wc, message_queue<AResponses>& w_r_q);
-    // Start receving from web
+    // Start receving from world
     void start_send_to_world();
 };
 
