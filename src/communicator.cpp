@@ -10,6 +10,7 @@
 
 #include "communicator.h"
 #include "world_amazon.pb.h"
+#include "amazon_ups.pb.h"
 
 using namespace std;
 
