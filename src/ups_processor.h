@@ -7,9 +7,9 @@
 #include <thread>
 
 #include "amazon_ups.pb.h"
-#include "communicator.h"
-#include "ups_receiver.h"
-#include "ups_sender.h"
+#include "receiver.h"
+#include "sender.h"
+#include "ups_communicator.h"
 #include "world_amazon.pb.h"
 
 using namespace std;
@@ -23,8 +23,8 @@ class UpsProcessor {
     message_queue<pair<long int, ACommands> >& send_world_queue;
     message_queue<AResponses>& recv_world_queue;
     message_queue<AUCommands>& send_ups_queue;
-    UpsSender ups_sender;
-    UpsReceiver ups_receiver;
+    Sender<AUCommands> ups_sender;
+    Receiver<AResponses> ups_receiver;
     long int& world_seqnum;
     long int& ups_seqnum;
     mutex& mtx;
