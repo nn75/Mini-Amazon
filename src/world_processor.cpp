@@ -16,11 +16,7 @@ WorldProcessor::WorldProcessor(message_queue<pair<long int, ACommands> >& mq1,
       ups_seqnum(unum),
       mtx(mt),
       world_thread(thread(&WorldProcessor::world_command_process, this)) {
-    // world_sender = new WorldSender(world_communicator, mq1);
-    // world_receiver = new WorldReceiver(world_communicator, mq2);
     cout << "world processor activated" << endl;
-    // this->world_thread = thread(&WorldProcessor::world_command_process,
-    // this);
 }
 
 void WorldProcessor::world_command_process() {
@@ -33,7 +29,7 @@ void WorldProcessor::world_command_process() {
                 for (int i = 0; i < tmp_msg.acks_size(); i++) {
                     long int ack_seq = tmp_msg.acks(i);
                     long int seq = send_world_queue.front().first;
-                    cout << "ack:" << ack_seq << endl;
+                    cout << "ack from world:" << ack_seq << endl;
                     pair<long int, ACommands> temp;
                     while (ack_seq != seq) {
                         if (send_world_queue.next_send == 0) break;
