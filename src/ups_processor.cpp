@@ -2,10 +2,10 @@
 
 using namespace std;
 UpsProcessor::UpsProcessor(message_queue<pair<long int, ACommands> >& mq1,
-                               message_queue<AResponses>& mq2,
-                               message_queue<AUCommands>& mq3,
-                               UpsCommunicator* ups_communicator,
-                               long int& wnum, long int& unum, mutex& mt)
+                           message_queue<AResponses>& mq2,
+                           message_queue<AUCommands>& mq3,
+                           UpsCommunicator* ups_communicator, long int& wnum,
+                           long int& unum, mutex& mt)
     : send_ups_queue(mq1),
       recv_ups_queue(mq2),
       send_ups_queue(mq3),
@@ -16,9 +16,7 @@ UpsProcessor::UpsProcessor(message_queue<pair<long int, ACommands> >& mq1,
       ups_seqnum(unum),
       mtx(mt),
       ups_thread(thread(&UpsProcessor::ups_command_process, this)) {
-
     cout << "ups processor activated" << endl;
-
 }
 
 void UpsProcessor::ups_command_process() {

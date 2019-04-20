@@ -7,10 +7,10 @@
 #include <thread>
 
 #include "amazon_ups.pb.h"
-#include "world_amazon.pb.h"
+#include "communicator.h"
 #include "ups_receiver.h"
 #include "ups_sender.h"
-#include "communicator.h"
+#include "world_amazon.pb.h"
 
 using namespace std;
 
@@ -34,10 +34,9 @@ class UpsProcessor {
     /////////////////////////////////
    public:
     UpsProcessor(message_queue<pair<long int, ACommands> >& mq1,
-                   message_queue<AResponses>& mq2,
-                   message_queue<AUCommands>& mq3,
-                   UpsCommunicator* ups_communicator, long int& wnum,
-                   long int& unum, mutex& mt);
+                 message_queue<AResponses>& mq2, message_queue<AUCommands>& mq3,
+                 UpsCommunicator* ups_communicator, long int& wnum,
+                 long int& unum, mutex& mt);
     ~UpsProcessor(){};
     void ups_command_process();
 };

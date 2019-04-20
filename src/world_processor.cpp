@@ -16,9 +16,7 @@ WorldProcessor::WorldProcessor(message_queue<pair<long int, ACommands> >& mq1,
       ups_seqnum(unum),
       mtx(mt),
       world_thread(thread(&WorldProcessor::world_command_process, this)) {
-
     cout << "world processor activated" << endl;
-
 }
 
 void WorldProcessor::world_command_process() {

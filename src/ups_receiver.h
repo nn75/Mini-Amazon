@@ -3,8 +3,8 @@
 
 #include <thread>
 
-#include "world_amazon.pb.h"
 #include "ups_communicator.h"
+#include "world_amazon.pb.h"
 
 #include "message_queue.h"
 

@@ -7,8 +7,8 @@
 #include <thread>
 
 #include "amazon_ups.pb.h"
-#include "world_amazon.pb.h"
 #include "communicator.h"
+#include "world_amazon.pb.h"
 #include "world_receiver.h"
 #include "world_sender.h"
 

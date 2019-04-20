@@ -8,16 +8,15 @@
 #include <iostream>
 #include <string>
 
-#include "message_queue.h"
 #include "amazon_ups.pb.h"
+#include "message_queue.h"
 #include "ups_communicator.h"
 
 #include "ups_receiver.h"
 
 using namespace std;
 
-UpsReceiver::UpsReceiver(UpsCommunicator* uc,
-                             message_queue<UACommands>& u_r_q)
+UpsReceiver::UpsReceiver(UpsCommunicator* uc, message_queue<UACommands>& u_r_q)
     : u_communicator(uc), u_recv_queue(u_r_q), ups_receiver_thread() {
     // Other things initialize after add thread
     // ups_receiver_thread;
