@@ -8,11 +8,11 @@ DBGOBJS=$(patsubst %.cpp,%.dbg.o,$(SRCS))
 .PHONY: test clean
 
 test: $(OBJS)
-	$(CC) -o $@ $(OBJS) world_amazon.pb.cc -L/usr/local/lib -lpthread -lprotobuf -std=c++11
+	$(CC) -o $@ $(OBJS) world_amazon.pb.cc amazon_ups.pb.cc -L/usr/local/lib -lpthread -lprotobuf -std=c++11
 %.o:%.cpp
 	$(CC) $(CPPFLAGS) -o $@ -c $<
 debug: $(DBGOBJS)
-	$(CC) -o $@ $(DBGOBJS) world_amazon.pb.cc -L/usr/local/lib -lpthread -lprotobuf -std=c++11
+	$(CC) -o $@ $(DBGOBJS) world_amazon.pb.cc amazon_ups.pb.cc -L/usr/local/lib -lpthread -lprotobuf -std=c++11
 %.dbg.o:%.cpp
 	$(CC) $(DBGCPPFLAGS) -o $@ -c $<
 clean:
