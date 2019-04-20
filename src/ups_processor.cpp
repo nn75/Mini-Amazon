@@ -2,17 +2,17 @@
 
 using namespace std;
 UpsProcessor::UpsProcessor(message_queue<pair<long int, ACommands> >& mq1,
-                           message_queue<AResponses>& mq2,
+                           message_queue<UACommands>& mq2,
                            message_queue<AUCommands>& mq3,
                            UpsCommunicator* ups_communicator, long int& wnum,
                            long int& unum, mutex& mt)
-    : send_ups_queue(mq1),
+    : send_world_queue(mq1),
       recv_ups_queue(mq2),
       send_ups_queue(mq3),
 
       ups_sender(ups_communicator, mq1),
       ups_receiver(ups_communicator, mq2),
-      ups_seqnum(wnum),
+      world_seqnum(wnum),
       ups_seqnum(unum),
       mtx(mt),
       ups_thread(thread(&UpsProcessor::ups_command_process, this)) {
