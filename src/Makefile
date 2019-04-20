@@ -1,6 +1,6 @@
-CC=g++
-CPPFLAGS=-pedantic -Wall -std=c++11 -O3
-DBGCPPFLAGS=-pedantic -Wall -std=c++11 -g -DDEBUG
+CC=clang++
+CPPFLAGS=-std=c++11 -O3
+DBGCPPFLAGS=-std=c++11 -g -DDEBUG
 SRCS=$(wildcard *.cpp)
 OBJS=$(patsubst %.cpp,%.o,$(SRCS))
 DBGOBJS=$(patsubst %.cpp,%.dbg.o,$(SRCS))
