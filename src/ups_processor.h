@@ -20,9 +20,9 @@ class UpsProcessor {
     /////////////////////////////////
    private:
     // target's port number
-    message_queue<pair<long int, ACommands> >& send_world_queue;
+    message_queue<pair<long int, ACommands>>& send_world_queue;
     message_queue<UACommands>& recv_ups_queue;
-    message_queue<AUCommands>& send_ups_queue;
+    message_queue<pair<long int, AUCommands>>& send_ups_queue;
     Sender<AUCommands> ups_sender;
     Receiver<UACommands> ups_receiver;
     long int& world_seqnum;
@@ -34,7 +34,7 @@ class UpsProcessor {
     /////////////////////////////////
    public:
     UpsProcessor(message_queue<pair<long int, ACommands> >& mq1,
-                 message_queue<UACommands>& mq2, message_queue<AUCommands>& mq3,
+                 message_queue<UACommands>& mq2, message_queue<pair<long int, AUCommands>>& mq3,
                  UpsCommunicator* ups_communicator, long int& wnum,
                  long int& unum, mutex& mt);
     ~UpsProcessor(){};

@@ -3,14 +3,14 @@
 using namespace std;
 UpsProcessor::UpsProcessor(message_queue<pair<long int, ACommands> >& mq1,
                            message_queue<UACommands>& mq2,
-                           message_queue<AUCommands>& mq3,
+                           message_queue<pair<long int , AUCommands>>& mq3,
                            UpsCommunicator* ups_communicator, long int& wnum,
                            long int& unum, mutex& mt)
     : send_world_queue(mq1),
       recv_ups_queue(mq2),
       send_ups_queue(mq3),
 
-      ups_sender(ups_communicator, mq1),
+      ups_sender(ups_communicator, mq3),
       ups_receiver(ups_communicator, mq2),
       world_seqnum(wnum),
       ups_seqnum(unum),
