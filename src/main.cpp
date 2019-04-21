@@ -1,6 +1,9 @@
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 #include <google/protobuf/text_format.h>
 
+#include <pqxx/pqxx>
+#include <iostream>
+
 #include "amazon_ups.pb.h"
 #include "message_queue.h"
 #include "world_amazon.pb.h"
@@ -12,6 +15,8 @@
 #include "world_processor.h"
 
 using namespace std;
+using namespace pqxx;
+
 
 // This is only used for test class World
 int main(int argc, char* argv[]) {
@@ -28,6 +33,16 @@ int main(int argc, char* argv[]) {
     // Initialize
     Warehouse houses[3] = {{1, 2, 3}, {2, 4, 6}, {3, 6, 9}};
     WorldCommunicator* world_communicator = new WorldCommunicator(3, houses);
+
+    //To initialize Database
+    //connection C("dbname = mini_amazon user = postgres password = passw0rd hostaddr = 67.159.95.41 port = 5432");
+    //connection C("dbname=dbuser user=postgres password=000000");
+    //if (C.is_open()) {
+    //  cout << "Opened database successfully: " << C.dbname() << endl;
+    //} else {
+    //  cout << "Can't open database" << endl;
+    //  return 1;
+    //}
 
     // Test for create world
     // for (int i = 0; i < 5; i++) {
@@ -68,13 +83,13 @@ int main(int argc, char* argv[]) {
     APurchaseMore* apm = pm.add_buy();
     apm->set_whnum(1);
     AProduct* pd = apm->add_things();
-    apm->set_seqnum(0);
+    apm->set_seqnum(1);
     pd->set_id(1);
     pd->set_description("test");
     pd->set_count(100);
     wnum++;
 
-    pair<long int, ACommands> test1(0, pm);
+    pair<long int, ACommands> test1(1, pm);
     s_w_q.pushback(test1);
 
     WorldProcessor* world_processor = new WorldProcessor(
@@ -85,8 +100,8 @@ int main(int argc, char* argv[]) {
         ;
     }
 
-    // world_communicator->disconnect();
-    // web_processor->disconnect();
+    world_communicator->disconnect();
+    web_processor->disconnect();
 
     // google::protobuf::ShutdownProtobufLibrary();
 }

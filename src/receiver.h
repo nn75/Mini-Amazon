@@ -33,12 +33,14 @@ class Receiver {
 
 template <class T>
 void Receiver<T>::start_receiving() {
-    cout << "start sender thread" << endl;
+    cout << "start recevier thread" << endl;
     while (1) {
         T message;
         if (!communicator->recv_msg(message)) {
             cout << "Message receiving failed" << endl;
             break;
+        }else{
+            cout << "Received one" << endl;
         }
         recv_queue.pushback(message);
     }

@@ -36,14 +36,16 @@ template <class T>
 void Sender<T>::start_sending() {
     cout << "start sender thread" << endl;
     while (1) {
-        if (sender_queue.if_empty()) {
-            usleep(100000);
+        if (sender_queue.next_send == sender_queue.dq_size) {
+            //usleep(100000);
             continue;
         }
         T message = sender_queue.send_next().second;
         if (!communicator->send_msg(message)) {
             cout << "Message sending failed" << endl;
             break;
+        }else{
+            cout << "Send one" << endl;
         }
     }
 }
