@@ -12,9 +12,10 @@
 using namespace std;
 
 // Constructor for Communicator
-WebProcessor::WebProcessor(message_queue<pair<long int, AUCommands> > &s_u_q,
-                           long int &unum, mutex &mt)
-    : send_ups_queue(s_u_q), ups_seqnum(unum), mtx(mt) {
+WebProcessor::WebProcessor(message_queue<pair<long int, ACommands> > &s_w_q,
+                           message_queue<pair<long int, AUCommands> > &s_u_q,
+                           long int &wnum, long int &unum, mutex &mt)
+    : send_world_queue(s_w_q),send_ups_queue(s_u_q), world_seqnum(wnum), ups_seqnum(unum), mtx(mt) {
     sock_fd = INVALID_FD;
     web_client_fd = INVALID_WEB_FD;
     type = "Web";
@@ -143,9 +144,28 @@ void WebProcessor::get_buy_info() {
     cout << "\nTracking number: " << tracking_number
          << "\nUPS account: " << ups_account << endl;
 
+    //1) Take out pending order and add to order table
+    //2) Send AUCommands to ups to send truck
+    //3) Send ACommands to world to pack product (If the stock is not enough, send ToPurchaseMore)
 
+    // 1) Not finished yet
+    // connection C("dbname = mini_amazon user = postgres password = passw0rd hostaddr = 67.159.95.41 port = 5432");
+    // if (C.is_open()) {
+    // } else {
+    //     cout << "ready = Can't open database" << endl;
+    // }
+    // string get_pending_order = "SELECT orders_pendingorder WHERE tracking_number = "+ tracking_number + ";";
+    // nontransaction N(C);
+    // result R(N.exec(check_truck));
+    // if(R.size() == 1){
+    //     result::const_iterator it = R.begin();
+    //     user_id = it[1].as<int>();
+    //     ups_account = it[1].as<int>();                      
+    // }else{
+    //     cout << "get from pending order failed"
+    // }
 
-    //Insert new order to order table
-
+    // 2) 
+    
     
 }

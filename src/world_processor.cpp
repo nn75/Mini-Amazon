@@ -36,7 +36,6 @@ void WorldProcessor::world_command_process() {
                     cout << "ack from world:" << ack_seq << endl;
                     pair<long int, ACommands> temp;
                     while (ack_seq != seq) {
-                        cout << ack_seq << ":" << seq << endl;
                         if (send_world_queue.next_send == 0) break;
                         if (seq == -1) {
                             send_world_queue.popfront(temp);
@@ -62,7 +61,7 @@ void WorldProcessor::world_command_process() {
                     } else {
                         cout << "ready = Can't open database" << endl;
                     }
-                    string update_to_packed = "UPDATE order_orders SET status = delivering WHERE tracking_number= "+ to_string(ship_id) + ";";
+                    string update_to_packed = "UPDATE orders_order SET status = delivering WHERE tracking_number= "+ to_string(ship_id) + ";";
                     work W(C);
                     W.exec(update_to_packed);
                     W.commit();
@@ -91,13 +90,13 @@ void WorldProcessor::world_command_process() {
                     } else {
                         cout << "ready = Can't open database" << endl;
                     }
-                    string update_to_packed = "UPDATE order_orders SET status = packed WHERE tracking_number= "+ to_string(ship_id) + ";";
+                    string update_to_packed = "UPDATE orders_order SET status = packed WHERE tracking_number= "+ to_string(ship_id) + ";";
                     work W1(C);
                     W1.exec(update_to_packed);
                     W1.commit();
 
                     //check truck if truck_num != -1, send load message to world
-                    string check_truck = "SELECT order_orders WHERE tracking_number = "+ to_string(ship_id) + " AND truck_id != -1 ;";
+                    string check_truck = "SELECT orders_order WHERE tracking_number = "+ to_string(ship_id) + " AND truck_id != -1 ;";
                     nontransaction N(C);
                     result R(N.exec(check_truck));
                     if(R.size() == 1){
@@ -116,7 +115,7 @@ void WorldProcessor::world_command_process() {
                         send_world_queue.pushback(world_load_pair);
 
                         //After packed and truck arrived, update order status to loading
-                        string update_to_loading = "UPDATE order_orders SET status = loading WHERE tracking_number= "+ to_string(ship_id) + ";";
+                        string update_to_loading = "UPDATE orders_order SET status = loading WHERE tracking_number= "+ to_string(ship_id) + ";";
                         work W2(C);
                         W2.exec(update_to_loading);
                         W2.commit();                        

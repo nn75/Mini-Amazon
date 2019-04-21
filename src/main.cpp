@@ -30,37 +30,30 @@ int main(int argc, char* argv[]) {
     long worldid_input = atoi(argv[1]);
     cout << "\nworldid_input is:" << worldid_input << endl;
 
-    // Initialize
+    //Initialize warehouse and world_communicator
     Warehouse houses[3] = {{1, 2, 3}, {2, 4, 6}, {3, 6, 9}};
     WorldCommunicator* world_communicator = new WorldCommunicator(3, houses);
 
-    //To initialize Database
-    //connection C("dbname = mini_amazon user = postgres password = passw0rd hostaddr = 67.159.95.41 port = 5432");
-    //connection C("dbname=dbuser user=postgres password=000000");
-    //if (C.is_open()) {
-    //  cout << "Opened database successfully: " << C.dbname() << endl;
-    //} else {
-    //  cout << "Can't open database" << endl;
-    //  return 1;
-    //}
+    //Initialize warehouse and world_communicator
+    UpsCommunicator* ups_communicator = new UpsCommunicator(0, NULL);
 
     // Test for create world
-    // for (int i = 0; i < 5; i++) {
     cout << "\nTest 1: Connect to 127.0.0.1 without worldid" << endl;
     world_communicator->connect("localhost");
-    // world_communicator->disconnect();
-    //}
+
 
     // Initialize message queue and multithread
     message_queue<pair<long int, ACommands> > s_w_q;   // Send world queue
     message_queue<AResponses> r_w_q;                   // Receive world queue
     message_queue<pair<long int, AUCommands> > s_u_q;  // Send ups queue
+    message_queue<UACommands> r_u_q;                  // Receive ups queue
+    
     long int wnum = 0;
     long int unum = 0;
     mutex mt;
 
     // Test for web connect
-    WebProcessor* web_processor = new WebProcessor(s_u_q, unum, mt);
+    WebProcessor* web_processor = new WebProcessor(s_w_q, s_u_q, wnum, unum, mt);
     web_processor->connect();
 
     // Test for Ups socket
@@ -71,15 +64,9 @@ int main(int argc, char* argv[]) {
     // Test for connect to worldid told by ups
     // cout << "\nTest 3: Connect to vcm-6873.vm.duke.edu with input worldid" <<
     // endl; world_communicator.connect("67.159.94.99", worldid_input);
-    // world_communicator.disconnect();
-
-    // cout << "\nTest 2: Connect to 127.0.0.1 with invalid worldid" << endl;
-    // world_communicator.connect("127.0.0.1", 0xdeadbeef);
-
-    // New a connect retuest
-    ACommands pm;
 
     // Initialize an ACommand to buy more, and push into send world queue
+    ACommands pm;
     APurchaseMore* apm = pm.add_buy();
     apm->set_whnum(1);
     AProduct* pd = apm->add_things();
@@ -92,15 +79,13 @@ int main(int argc, char* argv[]) {
     pair<long int, ACommands> test1(1, pm);
     s_w_q.pushback(test1);
 
-    WorldProcessor* world_processor = new WorldProcessor(
-        s_w_q, r_w_q, s_u_q, world_communicator, wnum, unum, mt);
+    WorldProcessor* world_processor = new WorldProcessor(s_w_q, r_w_q, s_u_q, world_communicator, wnum, unum, mt);
 
     // Keep running
-    while (1) {
-        ;
-    }
+    while (1) {;}
 
     world_communicator->disconnect();
+    ups_communicator->disconnect();
     web_processor->disconnect();
 
     // google::protobuf::ShutdownProtobufLibrary();

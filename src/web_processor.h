@@ -9,6 +9,7 @@
 #include <thread>
 #include <vector>
 #include "amazon_ups.pb.h"
+#include "world_amazon.pb.h"
 #include "message_queue.h"
 
 using namespace std;
@@ -23,9 +24,13 @@ class WebProcessor {
     int web_client_fd;
     // communicator type
     const char* type;
+    // message queue to send web info to world
+    message_queue<pair<long int, ACommands> >& send_world_queue;
     // message queue to send web info to ups
     message_queue<pair<long int, AUCommands> >& send_ups_queue;
-    // Web -> Ups
+    //world seqnum
+    long int& world_seqnum;
+    //ups seqnum
     long int& ups_seqnum;
     // lock the sequm;
     mutex& mtx;
@@ -42,8 +47,9 @@ class WebProcessor {
     /////////////////////////////////
    public:
     // Constructor
-    WebProcessor(message_queue<pair<long int, AUCommands> >& s_u_q,
-                 long int& unum, mutex& mt);
+    WebProcessor(message_queue<pair<long int, ACommands> >& s_w_q,
+                 message_queue<pair<long int, AUCommands> >& s_u_q,
+                 long int& wnum, long int& unum, mutex& mt);
     // Disconnect from web
     void disconnect();
     // Connect web

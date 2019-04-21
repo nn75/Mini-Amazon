@@ -1,5 +1,8 @@
 #include "ups_processor.h"
+#include <pqxx/pqxx>
 
+
+using namespace pqxx;
 using namespace std;
 UpsProcessor::UpsProcessor(message_queue<pair<long int, ACommands>>& mq1,
                            message_queue<UACommands>& mq2,
@@ -21,82 +24,101 @@ UpsProcessor::UpsProcessor(message_queue<pair<long int, ACommands>>& mq1,
 
 void UpsProcessor::ups_command_process() {
     while (1) {
-        // if (!recv_ups_queue.if_empty()) {
-        //     UACommands tmp_msg;
-        //     recv_ups_queue.popfront(tmp_msg);
-        //     AUCommands ack_res;
-        //     if (tmp_msg.acks_size() != 0) {
-        //         for (int i = 0; i < tmp_msg.acks_size(); i++) {
-        //             long int ack_seq = tmp_msg.acks(i);
-        //             long int seq = send_ups_queue.front().first;
-        //             cout << "ack:" << ack_seq << endl;
-        //             pair<AUCommands> temp;
-        //             while (ack_seq != seq) {
-        //                 if (send_ups_queue.next_send == 0) break;
-        //                 if (seq == -1) {
-        //                     send_ups_queue.popfront(temp);
-        //                     continue;
-        //                 }
-        //                 send_ups_queue.popfront(temp);
-        //                 send_ups_queue.pushback(temp);
-        //                 seq = send_ups_queue.front().first;
-        //             }
-        //             if (send_ups_queue.next_send == 0) {
-        //                 break;
-        //             }
-        //             send_ups_queue.popfront(temp);
-        //         }
-        //     }
-        //     if (tmp_msg.loaded_size() != 0) {
-        //         for (int i = 0; i < tmp_msg.loaded_size(); i++) {
-        //             long int ship_id = tmp_msg.loaded(i).shipid();
-        //             long int ship_seq = tmp_msg.loaded(i).seqnum();
-        //             ack_res.add_acks(ship_seq);
-        //             AUCommands ups_load_msg;
-        //             Deliver * deliver = ups_load_msg.mutable_todeliver();
-        //             deliver->set_packageid(ship_id);
-        //             mtx.lock();
-        //             deliver->set_seqnum(ups_seqnum);
-        //             ups_seqnum++;
-        //             mtx.unlock();
-        //             send_ups_queue.pushback(ups_load_msg);
-        //             also update the status of package
-        //         }
-        //     }
-        //     if (tmp_msg.ready_size() != 0) {
-        //         for (int i = 0; i < tmp_msg.ready_size(); i++) {
-        //             long int ship_id = tmp_msg.ready(i).shipid();
-        //             long int ship_seq = tmp_msg.ready(i).seqnum();
-        //             ack_res.add_acks(ship_seq);
-        //             please fill database code here use ship_id to select
-        //             truck_id and warehouse number also update the status of
-        //             package if(truckid > 0){
-        //                 ACommands load_msg;
-        //                 APutOnTruck * load = load_msg.mutable_load();
-        //                 load->set_whnum = wh_num;
-        //                 load->set_truckid = truckid;
-        //                 load->set_packageid = ship_id;
-        //                 mtx.lock();
-        //                 load->set_seqnum(world_seqnum);
-        //                 world_seqnum++;
-        //                 mtx.unlock();
-        //             }
-        //         }
-        //     }
-        //     if (tmp_msg.arrived_size() != 0) {
-        //         for (int i = 0; i < tmp_msg.arrived_size(); i++) {
-        //             int wh_num = tmp_msg.arrived(i).whnum();
-        //             long int product_id = tmp_msg.arrived(i).things(0).id();
-        //             cout << "id:" << product_id << endl;
-        //             int count = tmp_msg.arrived(i).things(0).count();
-        //             cout << "count:" << count << endl;
-        //             long int ship_seq = tmp_msg.arrived(i).seqnum();
-        //             ack_res.add_acks(ship_seq);
-        //             // also update the status of package
-        //         }
-        //     }
-        //     pair<int, ACommands> r_acks(-1, ack_res);
-        //     send_ups_queue.pushback(r_acks);
-        // }
-    }
+        if (!recv_ups_queue.if_empty()) {
+            UACommands tmp_msg;
+            recv_ups_queue.popfront(tmp_msg);
+            AUCommands ack_res;
+            if (tmp_msg.acks_size() != 0) {
+                for (int i = 0; i < tmp_msg.acks_size(); i++) {
+                    long int ack_seq = tmp_msg.acks(i);
+                    long int seq = send_ups_queue.front().first;
+                    cout << "ack from ups:" << ack_seq << endl;
+                    pair<long int, AUCommands> temp;
+                    while (ack_seq != seq) {
+                        if (send_ups_queue.next_send == 0) break;
+                        if (seq == -1) {
+                            send_ups_queue.popfront(temp);
+                            continue;
+                        }
+                        send_ups_queue.popfront(temp);
+                        send_ups_queue.pushback(temp);
+                        seq = send_ups_queue.front().first;
+                    }
+                    if (send_ups_queue.next_send == 0) break;
+                    send_ups_queue.popfront(temp);
+                }
+            }
+            if (tmp_msg.arrived_size() != 0) {
+                for (int i = 0; i < tmp_msg.arrived_size(); i++) {
+                    int wh_num = tmp_msg.arrived(i).whid();
+                    int truck_id = tmp_msg.arrived(i).truckid();
+                    long int package_id = tmp_msg.arrived(i).packageid();
+                    long int arrived_seq = tmp_msg.arrived(i).seqnum();
+                    ack_res.add_acks(arrived_seq);
+
+                    //database: If the ups said the truck is arrived, update the truck_id in database from -1 to given number
+                    connection C("dbname = mini_amazon user = postgres password = passw0rd hostaddr = 67.159.95.41 port = 5432");
+                    if (C.is_open()) {
+                    } else {
+                        cout << "ready = Can't open database" << endl;
+                    }
+                    string update_truck = "UPDATE order_orders SET truck_id = "+ to_string(truck_id) + " WHERE tracking_number= "+ to_string(package_id) + ";";
+                    work W1(C);
+                    W1.exec(update_truck);
+                    W1.commit();
+                    
+                    //check status of order, if status == packed, send load message to world
+                    string check_pack = "SELECT order_orders WHERE tracking_number = "+ to_string(package_id) + " AND status = packed ;";
+                    nontransaction N(C);
+                    result R(N.exec(check_pack));
+                    if(R.size() == 1){
+                        result::const_iterator it = R.begin();
+                        ACommands world_load_msg;
+                        APutOnTruck * put_on_truck = world_load_msg.add_load();
+                        put_on_truck->set_whnum(it[4].as<int>());
+                        put_on_truck->set_truckid(it[5].as<int>());
+                        put_on_truck->set_shipid(it[0].as<long int>());
+                    
+                        mtx.lock();//////lock
+                        put_on_truck->set_seqnum(world_seqnum);
+                        pair<long int, ACommands> world_load_pair(world_seqnum, world_load_msg);
+                        world_seqnum++;
+                        mtx.unlock();/////unlock
+                        send_world_queue.pushback(world_load_pair);
+
+                        //After packed and truck arrived, update order status to loading
+                        string update_to_loading = "UPDATE order_orders SET status = loading WHERE tracking_number= "+ to_string(package_id) + ";";
+                        work W2(C);
+                        W2.exec(update_to_loading);
+                        W2.commit();                        
+                    }
+                    C.disconnect ();
+                }
+            }
+            if (tmp_msg.finish_size() != 0) {
+                for (int i = 0; i < tmp_msg.finish_size(); i++) {
+                    long int package_id = tmp_msg.finish(i).packageid();
+                    long int finish_seq = tmp_msg.finish(i).seqnum();
+                    ack_res.add_acks(finish_seq);
+                    
+                    // database: If ups said 
+                    connection C("dbname = mini_amazon user = postgres password = passw0rd hostaddr = 67.159.95.41 port = 5432");
+                    if (C.is_open()) {
+                    } else {
+                        cout << "arrived = Can't open database" << endl;
+                    }
+                    string update_delivered = "UPDATE orders_product SET status = delivered WHERE tracking = "+ to_string(package_id) + ";";
+                    work W(C);
+                    W.exec(update_delivered);
+                    W.commit();
+                    C.disconnect ();
+
+                }
+            }
+            if(ack_res.acks_size() != 0){
+                pair<long int, AUCommands> r_acks(-1, ack_res);
+                send_ups_queue.pushback(r_acks);
+            }
+        }//not if_empty
+    }//While
 }
