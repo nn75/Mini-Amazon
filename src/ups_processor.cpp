@@ -72,7 +72,7 @@ void UpsProcessor::ups_command_process() {
                     // database: If the ups said the truck is arrived, update
                     // the truck_id in database from -1 to given number
                     string update_truck =
-                        "UPDATE order_orders SET truck_id = " +
+                        "UPDATE orders_order SET truck_id = " +
                         to_string(truck_id) +
                         " WHERE tracking_number= " + to_string(package_id) +
                         ";";
@@ -81,7 +81,7 @@ void UpsProcessor::ups_command_process() {
                     // check status of order, if status == packed, send load
                     // message to world
                     string check_pack =
-                        "SELECT order_orders WHERE tracking_number = " +
+                        "SELECT * FROM orders_order WHERE tracking_number = " +
                         to_string(package_id) + " AND status = 'packed' ;";
                     vector<vector<string>> res_packed= dbi->run_query_with_results(check_pack);
                     if (res_packed.size() == 1) {
@@ -102,7 +102,7 @@ void UpsProcessor::ups_command_process() {
                         // After packed and truck arrived, update order status
                         // to loading
                         string update_to_loading =
-                            "UPDATE order_orders SET status = loading WHERE tracking_number= " + to_string(package_id) + ";";
+                            "UPDATE orders_order SET status = 'loading' WHERE tracking_number= " + to_string(package_id) + ";";
                         dbi->run_query(update_to_loading);
                     }
                 }

@@ -174,8 +174,6 @@ void WebProcessor::get_buy_info() {
     int address_y;
     string ups_account;
     if (res_pending.size() == 1) {
-        // tracking number,0;
-        // creditcard, 1;
         user_id = atoi(res_pending[0][2].c_str());
         product_name = res_pending[0][3];
         amount = atoi(res_pending[0][4].c_str());
@@ -213,8 +211,7 @@ void WebProcessor::get_buy_info() {
                             to_string(closest_wh_id) +
                             " AND product_name = '" + product_name + "';";
     vector<vector<string>> res_pid = dbi->run_query_with_results(get_product_id);
-    if (res_pid .size() == 1) {
-        // There exists such product in this warehouse
+    if (res_pid .size() == 1) {// There exists such product in this warehouse
         int product_id = atoi(res_pid[0][1].c_str());
         int stock = atoi(res_pid[0][4].c_str());
 
@@ -307,7 +304,30 @@ void WebProcessor::get_buy_info() {
             cout << "Stock limit error" << endl;
         }
     } else {
+        //There's no such product in this warehouse, create a new product in this warehouse
         cout << "Use wh_id and product_name to get product failed\n";
+        // cout << "To create a new product at warehouse " << closest_wh_id << endl;
+        // string get_new_product_id = "SELECT COUNT(DISTINCT product_name) FROM orders_product";
+
+        // vector<vector<string> > res_new_id = run_query_with_results(get_new_product_id);
+        // int new_product_id = atoi(res_new_id[0][0].c_str());
+
+        // cout << "new_product_id is:" << new_product_id << endl;
+
+        // int count = 500 + amount;
+        // ACommands new_buy;
+        // APurchaseMore *new_apm_buy = new_buy.add_buy();
+        // new_apm_buy->set_whnum(closest_wh_id);
+        // AProduct *pd_buy = new_apm_buy->add_things();
+        // new_pd_buy->set_id(product_id);
+        // new_pd_buy->set_description(product_name);
+        // new_pd_buy->set_count(amount);
+        // mtx.lock();  //////lock
+        // new_apm_buy->set_seqnum(world_seqnum);
+        // pair<long int, ACommands> new_buy_pair(world_seqnum, new_buy);
+        // world_seqnum++;
+        // mtx.unlock();  /////unlock
+        // send_world_queue.pushback(new_buy_pair);
         
     }
 }
