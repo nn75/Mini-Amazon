@@ -26,7 +26,6 @@ class Sender {
     // Constructor
     Sender<T>(Communicator* c, message_queue<pair<long int, T>>& s_q)
         : communicator(c), sender_queue(s_q) {
-        cout << "send queue create\n" << endl;
         sender_thread = thread(&Sender<T>::start_sending, this);
     };
     // Start receving from web
@@ -41,12 +40,11 @@ void Sender<T>::start_sending() {
             // usleep(100000);
             continue;
         }
-        cout << sender_queue.get_next_send()
-             << "== " << sender_queue.get_dq_size() << endl;
+        // cerr << sender_queue.get_next_send()
+        //      << "== " << sender_queue.get_dq_size() << endl;
         T message = sender_queue.send_next().second;
         cout << "pair first:" << sender_queue.send_next().first << endl;
         if (!communicator->send_msg(message)) {
-            cout << "Message sending failed" << endl;
             break;
         } else {
             cout << "Send one" << endl;

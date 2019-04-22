@@ -37,7 +37,6 @@ void Receiver<T>::start_receiving() {
     while (1) {
         T message;
         if (!communicator->recv_msg(message)) {
-            cout << "Message receiving failed" << endl;
             break;
         } else {
             cout << "Received one" << endl;

@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
     WorldCommunicator* world_communicator = new WorldCommunicator(3, houses);
 
     // Initialize warehouse and world_communicator
-    UpsCommunicator* ups_communicator = new UpsCommunicator(0, NULL);
+    // UpsCommunicator* ups_communicator = new UpsCommunicator(0, NULL);
 
     // Initialize message queue and multithread
     message_queue<pair<long int, ACommands> > s_w_q;   // Send world queue
@@ -46,14 +46,6 @@ int main(int argc, char* argv[]) {
     long int wnum = 0;
     long int unum = 0;
     mutex mt;
-
-    // Initialize processors
-    WorldProcessor* world_processor = new WorldProcessor(
-        s_w_q, r_w_q, s_u_q, world_communicator, wnum, unum, mt);
-    UpsProcessor* ups_processor =
-        new UpsProcessor(s_w_q, r_u_q, s_u_q, ups_communicator, wnum, unum, mt);
-    // WebProcessor* web_processor = new WebProcessor(s_w_q, s_u_q, wnum, unum,
-    // mt);
 
     // Test for web connect
     // web_processor->connect();
@@ -71,15 +63,27 @@ int main(int argc, char* argv[]) {
     // cout << "\nTest connect ups: Connect to 67.159.94.99" << endl;
     // ups_communicator->connect("67.159.94.99", worldid_input);
 
-    // Initialize an ACommand to buy more, and push into send world queue
-    // ACommands pm;
-    // APurchaseMore* apm = pm.add_buy();
-    // apm->set_whnum(1);
-    // AProduct* pd = apm->add_things();
-    // apm->set_seqnum(0);s
-    // pd->set_id(1);
-    // pd->set_description("Apple");
-    // pd->set_count(100);
+    /////////////////////////////////
+    /// Testing message start here
+    /////////////////////////////////
+    // Initialize processors
+    WorldProcessor* world_processor = new WorldProcessor(
+        s_w_q, r_w_q, s_u_q, world_communicator, wnum, unum, mt);
+    // UpsProcessor* ups_processor = new UpsProcessor(s_w_q, r_u_q, s_u_q,
+    // ups_communicator, wnum, unum, mt); WebProcessor* web_processor = new
+    // WebProcessor(s_w_q, s_u_q, wnum, unum, mt); Initialize an ACommand to buy
+    // more, and push into send world queue
+    ACommands pm;
+    APurchaseMore* apm = pm.add_buy();
+    apm->set_whnum(1);
+    AProduct* pd = apm->add_things();
+    pd->set_id(1);
+    pd->set_description("Apple");
+    pd->set_count(450);
+    apm->set_seqnum(0);
+    pair<long int, ACommands> test1(0, pm);
+    s_w_q.pushback(test1);
+
     // wnum++;
 
     // ACommands pk;
@@ -121,12 +125,10 @@ int main(int argc, char* argv[]) {
     // dvr->set_packageid(1);
     // dvr->set_seqnum(1);
 
-    // pair<long int, ACommands> test1(0, pm);
     // pair<long int, ACommands> test2(1, pk);
     // pair<long int, ACommands> test3(2, ld);
     // pair<long int, AUCommands> test4(0, od);
     // pair<long int, AUCommands> test5(1, dv);
-    // s_w_q.pushback(test1);
     // s_w_q.pushback(test2);
     // s_w_q.pushback(test3);
     // s_u_q.pushback(test4);
@@ -138,7 +140,7 @@ int main(int argc, char* argv[]) {
     }
 
     world_communicator->disconnect();
-    ups_communicator->disconnect();
+    // ups_communicator->disconnect();
     // web_processor->disconnect();
 
     // google::protobuf::ShutdownProtobufLibrary();

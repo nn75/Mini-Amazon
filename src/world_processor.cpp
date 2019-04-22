@@ -1,5 +1,6 @@
 #include "world_processor.h"
 #include <pqxx/pqxx>
+#include "database_interface.h"
 
 using namespace pqxx;
 using namespace std;
@@ -24,6 +25,7 @@ WorldProcessor::WorldProcessor(
 }
 
 void WorldProcessor::world_command_process() {
+    database_interface* dbi = new database_interface();
     while (1) {
         if (!recv_world_queue.if_empty()) {
             AResponses tmp_msg;
@@ -144,7 +146,8 @@ void WorldProcessor::world_command_process() {
                     C.disconnect();
                 }
             }
-            if (tmp_msg.arrived_size() != 0) {
+            if (tmp_msg.arrived_size() !=
+                0) {  // Process the response of purchursemore
                 for (int i = 0; i < tmp_msg.arrived_size(); i++) {
                     // parse the arrived message;
                     int wh_num = tmp_msg.arrived(i).whnum();
@@ -153,32 +156,26 @@ void WorldProcessor::world_command_process() {
                         tmp_msg.arrived(i).things(0).description();
                     int product_count = tmp_msg.arrived(i).things(0).count();
                     long int arrived_seqnum = tmp_msg.arrived(i).seqnum();
+
+                    // add ack to ack response
+                    ack_res.add_acks(arrived_seqnum);
+
+                    cout << "AResponse APurchaseMore arrived:" << endl;
                     cout << "arrived whnum:" << wh_num << endl;
                     cout << "arrived things -> id:" << product_id << endl;
                     cout << "arrived things -> description:"
                          << product_desciption << endl;
                     cout << "arrived things -> count:" << product_count << endl;
                     cout << "arrived seqnum:" << arrived_seqnum << endl;
-                    ack_res.add_acks(arrived_seqnum);  // add ack
 
                     // database: If new product stock arrived at warehouse,
                     // update product table, increase its stock to 500
-                    connection C(
-                        "dbname = mini_amazon user = postgres password = "
-                        "passw0rd hostaddr = 67.159.95.41 port = 5432");
-                    if (C.is_open()) {
-                    } else {
-                        cout << "arrived = Can't open database" << endl;
-                    }
                     string increase_stock =
                         "UPDATE orders_product SET stock = stock+" +
                         to_string(product_count) +
                         " WHERE product_id = " + to_string(product_id) +
                         " AND wh_id = " + to_string(wh_num) + ";";
-                    work W(C);
-                    W.exec(increase_stock);
-                    W.commit();
-                    C.disconnect();
+                    dbi->run_query(increase_stock);
                 }
             }
             if (ack_res.acks_size() != 0) {
