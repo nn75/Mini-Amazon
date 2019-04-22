@@ -1,7 +1,6 @@
 #include "ups_processor.h"
 #include <pqxx/pqxx>
 
-
 using namespace pqxx;
 using namespace std;
 UpsProcessor::UpsProcessor(message_queue<pair<long int, ACommands>>& mq1,
@@ -56,43 +55,58 @@ void UpsProcessor::ups_command_process() {
                     long int arrived_seq = tmp_msg.arrived(i).seqnum();
                     ack_res.add_acks(arrived_seq);
 
-                    //database: If the ups said the truck is arrived, update the truck_id in database from -1 to given number
-                    connection C("dbname = mini_amazon user = postgres password = passw0rd hostaddr = 67.159.95.41 port = 5432");
+                    // database: If the ups said the truck is arrived, update
+                    // the truck_id in database from -1 to given number
+                    connection C(
+                        "dbname = mini_amazon user = postgres password = "
+                        "passw0rd hostaddr = 67.159.95.41 port = 5432");
                     if (C.is_open()) {
                     } else {
                         cout << "ready = Can't open database" << endl;
                     }
-                    string update_truck = "UPDATE order_orders SET truck_id = "+ to_string(truck_id) + " WHERE tracking_number= "+ to_string(package_id) + ";";
+                    string update_truck =
+                        "UPDATE order_orders SET truck_id = " +
+                        to_string(truck_id) +
+                        " WHERE tracking_number= " + to_string(package_id) +
+                        ";";
                     work W1(C);
                     W1.exec(update_truck);
                     W1.commit();
-                    
-                    //check status of order, if status == packed, send load message to world
-                    string check_pack = "SELECT order_orders WHERE tracking_number = "+ to_string(package_id) + " AND status = packed ;";
+
+                    // check status of order, if status == packed, send load
+                    // message to world
+                    string check_pack =
+                        "SELECT order_orders WHERE tracking_number = " +
+                        to_string(package_id) + " AND status = packed ;";
                     nontransaction N(C);
                     result R(N.exec(check_pack));
-                    if(R.size() == 1){
+                    if (R.size() == 1) {
                         result::const_iterator it = R.begin();
                         ACommands world_load_msg;
-                        APutOnTruck * put_on_truck = world_load_msg.add_load();
+                        APutOnTruck* put_on_truck = world_load_msg.add_load();
                         put_on_truck->set_whnum(it[4].as<int>());
                         put_on_truck->set_truckid(it[5].as<int>());
                         put_on_truck->set_shipid(it[0].as<long int>());
-                    
-                        mtx.lock();//////lock
+
+                        mtx.lock();  //////lock
                         put_on_truck->set_seqnum(world_seqnum);
-                        pair<long int, ACommands> world_load_pair(world_seqnum, world_load_msg);
+                        pair<long int, ACommands> world_load_pair(
+                            world_seqnum, world_load_msg);
                         world_seqnum++;
-                        mtx.unlock();/////unlock
+                        mtx.unlock();  /////unlock
                         send_world_queue.pushback(world_load_pair);
 
-                        //After packed and truck arrived, update order status to loading
-                        string update_to_loading = "UPDATE order_orders SET status = loading WHERE tracking_number= "+ to_string(package_id) + ";";
+                        // After packed and truck arrived, update order status
+                        // to loading
+                        string update_to_loading =
+                            "UPDATE order_orders SET status = loading WHERE "
+                            "tracking_number= " +
+                            to_string(package_id) + ";";
                         work W2(C);
                         W2.exec(update_to_loading);
-                        W2.commit();                        
+                        W2.commit();
                     }
-                    C.disconnect ();
+                    C.disconnect();
                 }
             }
             if (tmp_msg.finish_size() != 0) {
@@ -102,25 +116,30 @@ void UpsProcessor::ups_command_process() {
                     ack_res.add_acks(finish_seq);
                     cout << "ups finish package_id" << package_id << endl;
                     cout << "ups finish finish_seq" << finish_seq << endl;
-                    
-                    // database: If ups said 
-                    connection C("dbname = mini_amazon user = postgres password = passw0rd hostaddr = 67.159.95.41 port = 5432");
+
+                    // database: If ups said
+                    connection C(
+                        "dbname = mini_amazon user = postgres password = "
+                        "passw0rd hostaddr = 67.159.95.41 port = 5432");
                     if (C.is_open()) {
                     } else {
                         cout << "arrived = Can't open database" << endl;
                     }
-                    string update_delivered = "UPDATE orders_order SET status='delivered' WHERE tracking_number = "+ to_string(package_id) + ";";
+                    string update_delivered =
+                        "UPDATE orders_order SET status='delivered' WHERE "
+                        "tracking_number = " +
+                        to_string(package_id) + ";";
                     work W(C);
                     W.exec(update_delivered);
                     W.commit();
-                    C.disconnect ();
+                    C.disconnect();
                 }
             }
-            if(ack_res.acks_size() != 0){
+            if (ack_res.acks_size() != 0) {
                 pair<long int, AUCommands> r_acks(-1, ack_res);
-                cout<<"stupid"<<ack_res.acks(0)<<endl;
+                cout << "stupid" << ack_res.acks(0) << endl;
                 send_ups_queue.pushback(r_acks);
             }
-        }//not if_empty
-    }//While
+        }  // not if_empty
+    }      // While
 }

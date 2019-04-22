@@ -39,7 +39,7 @@ void Receiver<T>::start_receiving() {
         if (!communicator->recv_msg(message)) {
             cout << "Message receiving failed" << endl;
             break;
-        }else{
+        } else {
             cout << "Received one" << endl;
         }
         recv_queue.pushback(message);

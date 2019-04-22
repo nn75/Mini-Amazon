@@ -9,8 +9,8 @@
 #include <thread>
 #include <vector>
 #include "amazon_ups.pb.h"
-#include "world_amazon.pb.h"
 #include "message_queue.h"
+#include "world_amazon.pb.h"
 
 using namespace std;
 
@@ -28,9 +28,9 @@ class WebProcessor {
     message_queue<pair<long int, ACommands> >& send_world_queue;
     // message queue to send web info to ups
     message_queue<pair<long int, AUCommands> >& send_ups_queue;
-    //world seqnum
+    // world seqnum
     long int& world_seqnum;
-    //ups seqnum
+    // ups seqnum
     long int& ups_seqnum;
     // lock the sequm;
     mutex& mtx;
