@@ -41,7 +41,7 @@ struct TableStruct_amazon_5fups_2eproto {
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::google::protobuf::internal::AuxillaryParseTableField aux[]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
-  static const ::google::protobuf::internal::ParseTable schema[11]
+  static const ::google::protobuf::internal::ParseTable schema[8]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::google::protobuf::internal::FieldMetadata field_metadata[];
   static const ::google::protobuf::internal::SerializationTable serialization_table[];
@@ -51,21 +51,15 @@ void AddDescriptors_amazon_5fups_2eproto();
 class AUCommands;
 class AUCommandsDefaultTypeInternal;
 extern AUCommandsDefaultTypeInternal _AUCommands_default_instance_;
-class ConnectWorld;
-class ConnectWorldDefaultTypeInternal;
-extern ConnectWorldDefaultTypeInternal _ConnectWorld_default_instance_;
-class ConnectedWorld;
-class ConnectedWorldDefaultTypeInternal;
-extern ConnectedWorldDefaultTypeInternal _ConnectedWorld_default_instance_;
+class AWarehouse;
+class AWarehouseDefaultTypeInternal;
+extern AWarehouseDefaultTypeInternal _AWarehouse_default_instance_;
 class Deliver;
 class DeliverDefaultTypeInternal;
 extern DeliverDefaultTypeInternal _Deliver_default_instance_;
 class Delivered;
 class DeliveredDefaultTypeInternal;
 extern DeliveredDefaultTypeInternal _Delivered_default_instance_;
-class Load;
-class LoadDefaultTypeInternal;
-extern LoadDefaultTypeInternal _Load_default_instance_;
 class Order;
 class OrderDefaultTypeInternal;
 extern OrderDefaultTypeInternal _Order_default_instance_;
@@ -78,22 +72,16 @@ extern TruckDefaultTypeInternal _Truck_default_instance_;
 class UACommands;
 class UACommandsDefaultTypeInternal;
 extern UACommandsDefaultTypeInternal _UACommands_default_instance_;
-class User;
-class UserDefaultTypeInternal;
-extern UserDefaultTypeInternal _User_default_instance_;
 namespace google {
 namespace protobuf {
 template<> ::AUCommands* Arena::CreateMaybeMessage<::AUCommands>(Arena*);
-template<> ::ConnectWorld* Arena::CreateMaybeMessage<::ConnectWorld>(Arena*);
-template<> ::ConnectedWorld* Arena::CreateMaybeMessage<::ConnectedWorld>(Arena*);
+template<> ::AWarehouse* Arena::CreateMaybeMessage<::AWarehouse>(Arena*);
 template<> ::Deliver* Arena::CreateMaybeMessage<::Deliver>(Arena*);
 template<> ::Delivered* Arena::CreateMaybeMessage<::Delivered>(Arena*);
-template<> ::Load* Arena::CreateMaybeMessage<::Load>(Arena*);
 template<> ::Order* Arena::CreateMaybeMessage<::Order>(Arena*);
 template<> ::Product* Arena::CreateMaybeMessage<::Product>(Arena*);
 template<> ::Truck* Arena::CreateMaybeMessage<::Truck>(Arena*);
 template<> ::UACommands* Arena::CreateMaybeMessage<::UACommands>(Arena*);
-template<> ::User* Arena::CreateMaybeMessage<::User>(Arena*);
 }  // namespace protobuf
 }  // namespace google
 
@@ -349,6 +337,18 @@ class Order :
 
   // accessors -------------------------------------------------------
 
+  // repeated .Product item = 6;
+  int item_size() const;
+  void clear_item();
+  static const int kItemFieldNumber = 6;
+  ::Product* mutable_item(int index);
+  ::google::protobuf::RepeatedPtrField< ::Product >*
+      mutable_item();
+  const ::Product& item(int index) const;
+  ::Product* add_item();
+  const ::google::protobuf::RepeatedPtrField< ::Product >&
+      item() const;
+
   // required string upsusername = 5;
   bool has_upsusername() const;
   void clear_upsusername();
@@ -363,15 +363,6 @@ class Order :
   ::std::string* mutable_upsusername();
   ::std::string* release_upsusername();
   void set_allocated_upsusername(::std::string* upsusername);
-
-  // required .Product item = 6;
-  bool has_item() const;
-  void clear_item();
-  static const int kItemFieldNumber = 6;
-  const ::Product& item() const;
-  ::Product* release_item();
-  ::Product* mutable_item();
-  void set_allocated_item(::Product* item);
 
   // required int32 whid = 1;
   bool has_whid() const;
@@ -418,153 +409,13 @@ class Order :
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::internal::HasBits<1> _has_bits_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
+  ::google::protobuf::RepeatedPtrField< ::Product > item_;
   ::google::protobuf::internal::ArenaStringPtr upsusername_;
-  ::Product* item_;
   ::google::protobuf::int32 whid_;
   ::google::protobuf::int32 x_;
   ::google::protobuf::int64 packageid_;
   ::google::protobuf::int64 seqnum_;
   ::google::protobuf::int32 y_;
-  friend struct ::TableStruct_amazon_5fups_2eproto;
-};
-// -------------------------------------------------------------------
-
-class Load :
-    public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:Load) */ {
- public:
-  Load();
-  virtual ~Load();
-
-  Load(const Load& from);
-
-  inline Load& operator=(const Load& from) {
-    CopyFrom(from);
-    return *this;
-  }
-  #if LANG_CXX11
-  Load(Load&& from) noexcept
-    : Load() {
-    *this = ::std::move(from);
-  }
-
-  inline Load& operator=(Load&& from) noexcept {
-    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
-      if (this != &from) InternalSwap(&from);
-    } else {
-      CopyFrom(from);
-    }
-    return *this;
-  }
-  #endif
-  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
-    return _internal_metadata_.unknown_fields();
-  }
-  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
-    return _internal_metadata_.mutable_unknown_fields();
-  }
-
-  static const ::google::protobuf::Descriptor* descriptor() {
-    return default_instance().GetDescriptor();
-  }
-  static const Load& default_instance();
-
-  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
-  static inline const Load* internal_default_instance() {
-    return reinterpret_cast<const Load*>(
-               &_Load_default_instance_);
-  }
-  static constexpr int kIndexInFileMessages =
-    2;
-
-  void Swap(Load* other);
-  friend void swap(Load& a, Load& b) {
-    a.Swap(&b);
-  }
-
-  // implements Message ----------------------------------------------
-
-  inline Load* New() const final {
-    return CreateMaybeMessage<Load>(nullptr);
-  }
-
-  Load* New(::google::protobuf::Arena* arena) const final {
-    return CreateMaybeMessage<Load>(arena);
-  }
-  void CopyFrom(const ::google::protobuf::Message& from) final;
-  void MergeFrom(const ::google::protobuf::Message& from) final;
-  void CopyFrom(const Load& from);
-  void MergeFrom(const Load& from);
-  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
-  bool IsInitialized() const final;
-
-  size_t ByteSizeLong() const final;
-  #if GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
-  static const char* _InternalParse(const char* begin, const char* end, void* object, ::google::protobuf::internal::ParseContext* ctx);
-  ::google::protobuf::internal::ParseFunc _ParseFunc() const final { return _InternalParse; }
-  #else
-  bool MergePartialFromCodedStream(
-      ::google::protobuf::io::CodedInputStream* input) final;
-  #endif  // GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
-  void SerializeWithCachedSizes(
-      ::google::protobuf::io::CodedOutputStream* output) const final;
-  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
-      ::google::protobuf::uint8* target) const final;
-  int GetCachedSize() const final { return _cached_size_.Get(); }
-
-  private:
-  void SharedCtor();
-  void SharedDtor();
-  void SetCachedSize(int size) const final;
-  void InternalSwap(Load* other);
-  private:
-  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
-    return nullptr;
-  }
-  inline void* MaybeArenaPtr() const {
-    return nullptr;
-  }
-  public:
-
-  ::google::protobuf::Metadata GetMetadata() const final;
-
-  // nested types ----------------------------------------------------
-
-  // accessors -------------------------------------------------------
-
-  // required int64 packageid = 2;
-  bool has_packageid() const;
-  void clear_packageid();
-  static const int kPackageidFieldNumber = 2;
-  ::google::protobuf::int64 packageid() const;
-  void set_packageid(::google::protobuf::int64 value);
-
-  // required int64 seqnum = 3;
-  bool has_seqnum() const;
-  void clear_seqnum();
-  static const int kSeqnumFieldNumber = 3;
-  ::google::protobuf::int64 seqnum() const;
-  void set_seqnum(::google::protobuf::int64 value);
-
-  // required bool isloading = 1;
-  bool has_isloading() const;
-  void clear_isloading();
-  static const int kIsloadingFieldNumber = 1;
-  bool isloading() const;
-  void set_isloading(bool value);
-
-  // @@protoc_insertion_point(class_scope:Load)
- private:
-  class HasBitSetters;
-
-  // helper for ByteSizeLong()
-  size_t RequiredFieldsByteSizeFallback() const;
-
-  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::internal::HasBits<1> _has_bits_;
-  mutable ::google::protobuf::internal::CachedSize _cached_size_;
-  ::google::protobuf::int64 packageid_;
-  ::google::protobuf::int64 seqnum_;
-  bool isloading_;
   friend struct ::TableStruct_amazon_5fups_2eproto;
 };
 // -------------------------------------------------------------------
@@ -614,7 +465,7 @@ class Deliver :
                &_Deliver_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    3;
+    2;
 
   void Swap(Deliver* other);
   friend void swap(Deliver& a, Deliver& b) {
@@ -678,10 +529,10 @@ class Deliver :
   ::google::protobuf::int64 packageid() const;
   void set_packageid(::google::protobuf::int64 value);
 
-  // required int64 seqnum = 2;
+  // required int64 seqnum = 3;
   bool has_seqnum() const;
   void clear_seqnum();
-  static const int kSeqnumFieldNumber = 2;
+  static const int kSeqnumFieldNumber = 3;
   ::google::protobuf::int64 seqnum() const;
   void set_seqnum(::google::protobuf::int64 value);
 
@@ -701,25 +552,25 @@ class Deliver :
 };
 // -------------------------------------------------------------------
 
-class ConnectedWorld :
-    public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:ConnectedWorld) */ {
+class AWarehouse :
+    public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:AWarehouse) */ {
  public:
-  ConnectedWorld();
-  virtual ~ConnectedWorld();
+  AWarehouse();
+  virtual ~AWarehouse();
 
-  ConnectedWorld(const ConnectedWorld& from);
+  AWarehouse(const AWarehouse& from);
 
-  inline ConnectedWorld& operator=(const ConnectedWorld& from) {
+  inline AWarehouse& operator=(const AWarehouse& from) {
     CopyFrom(from);
     return *this;
   }
   #if LANG_CXX11
-  ConnectedWorld(ConnectedWorld&& from) noexcept
-    : ConnectedWorld() {
+  AWarehouse(AWarehouse&& from) noexcept
+    : AWarehouse() {
     *this = ::std::move(from);
   }
 
-  inline ConnectedWorld& operator=(ConnectedWorld&& from) noexcept {
+  inline AWarehouse& operator=(AWarehouse&& from) noexcept {
     if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
       if (this != &from) InternalSwap(&from);
     } else {
@@ -738,34 +589,34 @@ class ConnectedWorld :
   static const ::google::protobuf::Descriptor* descriptor() {
     return default_instance().GetDescriptor();
   }
-  static const ConnectedWorld& default_instance();
+  static const AWarehouse& default_instance();
 
   static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
-  static inline const ConnectedWorld* internal_default_instance() {
-    return reinterpret_cast<const ConnectedWorld*>(
-               &_ConnectedWorld_default_instance_);
+  static inline const AWarehouse* internal_default_instance() {
+    return reinterpret_cast<const AWarehouse*>(
+               &_AWarehouse_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    4;
+    3;
 
-  void Swap(ConnectedWorld* other);
-  friend void swap(ConnectedWorld& a, ConnectedWorld& b) {
+  void Swap(AWarehouse* other);
+  friend void swap(AWarehouse& a, AWarehouse& b) {
     a.Swap(&b);
   }
 
   // implements Message ----------------------------------------------
 
-  inline ConnectedWorld* New() const final {
-    return CreateMaybeMessage<ConnectedWorld>(nullptr);
+  inline AWarehouse* New() const final {
+    return CreateMaybeMessage<AWarehouse>(nullptr);
   }
 
-  ConnectedWorld* New(::google::protobuf::Arena* arena) const final {
-    return CreateMaybeMessage<ConnectedWorld>(arena);
+  AWarehouse* New(::google::protobuf::Arena* arena) const final {
+    return CreateMaybeMessage<AWarehouse>(arena);
   }
   void CopyFrom(const ::google::protobuf::Message& from) final;
   void MergeFrom(const ::google::protobuf::Message& from) final;
-  void CopyFrom(const ConnectedWorld& from);
-  void MergeFrom(const ConnectedWorld& from);
+  void CopyFrom(const AWarehouse& from);
+  void MergeFrom(const AWarehouse& from);
   PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
   bool IsInitialized() const final;
 
@@ -787,7 +638,7 @@ class ConnectedWorld :
   void SharedCtor();
   void SharedDtor();
   void SetCachedSize(int size) const final;
-  void InternalSwap(ConnectedWorld* other);
+  void InternalSwap(AWarehouse* other);
   private:
   inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
     return nullptr;
@@ -803,21 +654,35 @@ class ConnectedWorld :
 
   // accessors -------------------------------------------------------
 
-  // required int64 seqnum = 2;
+  // required int32 id = 1;
+  bool has_id() const;
+  void clear_id();
+  static const int kIdFieldNumber = 1;
+  ::google::protobuf::int32 id() const;
+  void set_id(::google::protobuf::int32 value);
+
+  // required int32 x = 2;
+  bool has_x() const;
+  void clear_x();
+  static const int kXFieldNumber = 2;
+  ::google::protobuf::int32 x() const;
+  void set_x(::google::protobuf::int32 value);
+
+  // required int64 seqnum = 4;
   bool has_seqnum() const;
   void clear_seqnum();
-  static const int kSeqnumFieldNumber = 2;
+  static const int kSeqnumFieldNumber = 4;
   ::google::protobuf::int64 seqnum() const;
   void set_seqnum(::google::protobuf::int64 value);
 
-  // required bool isconnected = 1;
-  bool has_isconnected() const;
-  void clear_isconnected();
-  static const int kIsconnectedFieldNumber = 1;
-  bool isconnected() const;
-  void set_isconnected(bool value);
+  // required int32 y = 3;
+  bool has_y() const;
+  void clear_y();
+  static const int kYFieldNumber = 3;
+  ::google::protobuf::int32 y() const;
+  void set_y(::google::protobuf::int32 value);
 
-  // @@protoc_insertion_point(class_scope:ConnectedWorld)
+  // @@protoc_insertion_point(class_scope:AWarehouse)
  private:
   class HasBitSetters;
 
@@ -827,164 +692,10 @@ class ConnectedWorld :
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::internal::HasBits<1> _has_bits_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
+  ::google::protobuf::int32 id_;
+  ::google::protobuf::int32 x_;
   ::google::protobuf::int64 seqnum_;
-  bool isconnected_;
-  friend struct ::TableStruct_amazon_5fups_2eproto;
-};
-// -------------------------------------------------------------------
-
-class User :
-    public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:User) */ {
- public:
-  User();
-  virtual ~User();
-
-  User(const User& from);
-
-  inline User& operator=(const User& from) {
-    CopyFrom(from);
-    return *this;
-  }
-  #if LANG_CXX11
-  User(User&& from) noexcept
-    : User() {
-    *this = ::std::move(from);
-  }
-
-  inline User& operator=(User&& from) noexcept {
-    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
-      if (this != &from) InternalSwap(&from);
-    } else {
-      CopyFrom(from);
-    }
-    return *this;
-  }
-  #endif
-  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
-    return _internal_metadata_.unknown_fields();
-  }
-  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
-    return _internal_metadata_.mutable_unknown_fields();
-  }
-
-  static const ::google::protobuf::Descriptor* descriptor() {
-    return default_instance().GetDescriptor();
-  }
-  static const User& default_instance();
-
-  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
-  static inline const User* internal_default_instance() {
-    return reinterpret_cast<const User*>(
-               &_User_default_instance_);
-  }
-  static constexpr int kIndexInFileMessages =
-    5;
-
-  void Swap(User* other);
-  friend void swap(User& a, User& b) {
-    a.Swap(&b);
-  }
-
-  // implements Message ----------------------------------------------
-
-  inline User* New() const final {
-    return CreateMaybeMessage<User>(nullptr);
-  }
-
-  User* New(::google::protobuf::Arena* arena) const final {
-    return CreateMaybeMessage<User>(arena);
-  }
-  void CopyFrom(const ::google::protobuf::Message& from) final;
-  void MergeFrom(const ::google::protobuf::Message& from) final;
-  void CopyFrom(const User& from);
-  void MergeFrom(const User& from);
-  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
-  bool IsInitialized() const final;
-
-  size_t ByteSizeLong() const final;
-  #if GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
-  static const char* _InternalParse(const char* begin, const char* end, void* object, ::google::protobuf::internal::ParseContext* ctx);
-  ::google::protobuf::internal::ParseFunc _ParseFunc() const final { return _InternalParse; }
-  #else
-  bool MergePartialFromCodedStream(
-      ::google::protobuf::io::CodedInputStream* input) final;
-  #endif  // GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
-  void SerializeWithCachedSizes(
-      ::google::protobuf::io::CodedOutputStream* output) const final;
-  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
-      ::google::protobuf::uint8* target) const final;
-  int GetCachedSize() const final { return _cached_size_.Get(); }
-
-  private:
-  void SharedCtor();
-  void SharedDtor();
-  void SetCachedSize(int size) const final;
-  void InternalSwap(User* other);
-  private:
-  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
-    return nullptr;
-  }
-  inline void* MaybeArenaPtr() const {
-    return nullptr;
-  }
-  public:
-
-  ::google::protobuf::Metadata GetMetadata() const final;
-
-  // nested types ----------------------------------------------------
-
-  // accessors -------------------------------------------------------
-
-  // required string username = 2;
-  bool has_username() const;
-  void clear_username();
-  static const int kUsernameFieldNumber = 2;
-  const ::std::string& username() const;
-  void set_username(const ::std::string& value);
-  #if LANG_CXX11
-  void set_username(::std::string&& value);
-  #endif
-  void set_username(const char* value);
-  void set_username(const char* value, size_t size);
-  ::std::string* mutable_username();
-  ::std::string* release_username();
-  void set_allocated_username(::std::string* username);
-
-  // required string password = 3;
-  bool has_password() const;
-  void clear_password();
-  static const int kPasswordFieldNumber = 3;
-  const ::std::string& password() const;
-  void set_password(const ::std::string& value);
-  #if LANG_CXX11
-  void set_password(::std::string&& value);
-  #endif
-  void set_password(const char* value);
-  void set_password(const char* value, size_t size);
-  ::std::string* mutable_password();
-  ::std::string* release_password();
-  void set_allocated_password(::std::string* password);
-
-  // required int64 userid = 1;
-  bool has_userid() const;
-  void clear_userid();
-  static const int kUseridFieldNumber = 1;
-  ::google::protobuf::int64 userid() const;
-  void set_userid(::google::protobuf::int64 value);
-
-  // @@protoc_insertion_point(class_scope:User)
- private:
-  class HasBitSetters;
-
-  // helper for ByteSizeLong()
-  size_t RequiredFieldsByteSizeFallback() const;
-
-  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::internal::HasBits<1> _has_bits_;
-  mutable ::google::protobuf::internal::CachedSize _cached_size_;
-  ::google::protobuf::internal::ArenaStringPtr username_;
-  ::google::protobuf::internal::ArenaStringPtr password_;
-  ::google::protobuf::int64 userid_;
+  ::google::protobuf::int32 y_;
   friend struct ::TableStruct_amazon_5fups_2eproto;
 };
 // -------------------------------------------------------------------
@@ -1034,7 +745,7 @@ class AUCommands :
                &_AUCommands_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    6;
+    4;
 
   void Swap(AUCommands* other);
   friend void swap(AUCommands& a, AUCommands& b) {
@@ -1115,10 +826,22 @@ class AUCommands :
   const ::google::protobuf::RepeatedPtrField< ::Deliver >&
       todeliver() const;
 
-  // repeated int64 acks = 3;
+  // repeated .AWarehouse whinfo = 3;
+  int whinfo_size() const;
+  void clear_whinfo();
+  static const int kWhinfoFieldNumber = 3;
+  ::AWarehouse* mutable_whinfo(int index);
+  ::google::protobuf::RepeatedPtrField< ::AWarehouse >*
+      mutable_whinfo();
+  const ::AWarehouse& whinfo(int index) const;
+  ::AWarehouse* add_whinfo();
+  const ::google::protobuf::RepeatedPtrField< ::AWarehouse >&
+      whinfo() const;
+
+  // repeated int64 acks = 4;
   int acks_size() const;
   void clear_acks();
-  static const int kAcksFieldNumber = 3;
+  static const int kAcksFieldNumber = 4;
   ::google::protobuf::int64 acks(int index) const;
   void set_acks(int index, ::google::protobuf::int64 value);
   void add_acks(::google::protobuf::int64 value);
@@ -1136,6 +859,7 @@ class AUCommands :
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   ::google::protobuf::RepeatedPtrField< ::Order > order_;
   ::google::protobuf::RepeatedPtrField< ::Deliver > todeliver_;
+  ::google::protobuf::RepeatedPtrField< ::AWarehouse > whinfo_;
   ::google::protobuf::RepeatedField< ::google::protobuf::int64 > acks_;
   friend struct ::TableStruct_amazon_5fups_2eproto;
 };
@@ -1186,7 +910,7 @@ class Truck :
                &_Truck_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    7;
+    5;
 
   void Swap(Truck* other);
   friend void swap(Truck& a, Truck& b) {
@@ -1289,138 +1013,6 @@ class Truck :
 };
 // -------------------------------------------------------------------
 
-class ConnectWorld :
-    public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:ConnectWorld) */ {
- public:
-  ConnectWorld();
-  virtual ~ConnectWorld();
-
-  ConnectWorld(const ConnectWorld& from);
-
-  inline ConnectWorld& operator=(const ConnectWorld& from) {
-    CopyFrom(from);
-    return *this;
-  }
-  #if LANG_CXX11
-  ConnectWorld(ConnectWorld&& from) noexcept
-    : ConnectWorld() {
-    *this = ::std::move(from);
-  }
-
-  inline ConnectWorld& operator=(ConnectWorld&& from) noexcept {
-    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
-      if (this != &from) InternalSwap(&from);
-    } else {
-      CopyFrom(from);
-    }
-    return *this;
-  }
-  #endif
-  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
-    return _internal_metadata_.unknown_fields();
-  }
-  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
-    return _internal_metadata_.mutable_unknown_fields();
-  }
-
-  static const ::google::protobuf::Descriptor* descriptor() {
-    return default_instance().GetDescriptor();
-  }
-  static const ConnectWorld& default_instance();
-
-  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
-  static inline const ConnectWorld* internal_default_instance() {
-    return reinterpret_cast<const ConnectWorld*>(
-               &_ConnectWorld_default_instance_);
-  }
-  static constexpr int kIndexInFileMessages =
-    8;
-
-  void Swap(ConnectWorld* other);
-  friend void swap(ConnectWorld& a, ConnectWorld& b) {
-    a.Swap(&b);
-  }
-
-  // implements Message ----------------------------------------------
-
-  inline ConnectWorld* New() const final {
-    return CreateMaybeMessage<ConnectWorld>(nullptr);
-  }
-
-  ConnectWorld* New(::google::protobuf::Arena* arena) const final {
-    return CreateMaybeMessage<ConnectWorld>(arena);
-  }
-  void CopyFrom(const ::google::protobuf::Message& from) final;
-  void MergeFrom(const ::google::protobuf::Message& from) final;
-  void CopyFrom(const ConnectWorld& from);
-  void MergeFrom(const ConnectWorld& from);
-  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
-  bool IsInitialized() const final;
-
-  size_t ByteSizeLong() const final;
-  #if GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
-  static const char* _InternalParse(const char* begin, const char* end, void* object, ::google::protobuf::internal::ParseContext* ctx);
-  ::google::protobuf::internal::ParseFunc _ParseFunc() const final { return _InternalParse; }
-  #else
-  bool MergePartialFromCodedStream(
-      ::google::protobuf::io::CodedInputStream* input) final;
-  #endif  // GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
-  void SerializeWithCachedSizes(
-      ::google::protobuf::io::CodedOutputStream* output) const final;
-  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
-      ::google::protobuf::uint8* target) const final;
-  int GetCachedSize() const final { return _cached_size_.Get(); }
-
-  private:
-  void SharedCtor();
-  void SharedDtor();
-  void SetCachedSize(int size) const final;
-  void InternalSwap(ConnectWorld* other);
-  private:
-  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
-    return nullptr;
-  }
-  inline void* MaybeArenaPtr() const {
-    return nullptr;
-  }
-  public:
-
-  ::google::protobuf::Metadata GetMetadata() const final;
-
-  // nested types ----------------------------------------------------
-
-  // accessors -------------------------------------------------------
-
-  // required int64 worldid = 1;
-  bool has_worldid() const;
-  void clear_worldid();
-  static const int kWorldidFieldNumber = 1;
-  ::google::protobuf::int64 worldid() const;
-  void set_worldid(::google::protobuf::int64 value);
-
-  // required int64 seqnum = 2;
-  bool has_seqnum() const;
-  void clear_seqnum();
-  static const int kSeqnumFieldNumber = 2;
-  ::google::protobuf::int64 seqnum() const;
-  void set_seqnum(::google::protobuf::int64 value);
-
-  // @@protoc_insertion_point(class_scope:ConnectWorld)
- private:
-  class HasBitSetters;
-
-  // helper for ByteSizeLong()
-  size_t RequiredFieldsByteSizeFallback() const;
-
-  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::internal::HasBits<1> _has_bits_;
-  mutable ::google::protobuf::internal::CachedSize _cached_size_;
-  ::google::protobuf::int64 worldid_;
-  ::google::protobuf::int64 seqnum_;
-  friend struct ::TableStruct_amazon_5fups_2eproto;
-};
-// -------------------------------------------------------------------
-
 class Delivered :
     public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:Delivered) */ {
  public:
@@ -1466,7 +1058,7 @@ class Delivered :
                &_Delivered_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    9;
+    6;
 
   void Swap(Delivered* other);
   friend void swap(Delivered& a, Delivered& b) {
@@ -1598,7 +1190,7 @@ class UACommands :
                &_UACommands_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    10;
+    7;
 
   void Swap(UACommands* other);
   friend void swap(UACommands& a, UACommands& b) {
@@ -1816,72 +1408,72 @@ inline void Product::set_amount(::google::protobuf::int32 value) {
 
 // required int32 whid = 1;
 inline bool Order::has_whid() const {
-  return (_has_bits_[0] & 0x00000004u) != 0;
+  return (_has_bits_[0] & 0x00000002u) != 0;
 }
 inline void Order::clear_whid() {
   whid_ = 0;
-  _has_bits_[0] &= ~0x00000004u;
+  _has_bits_[0] &= ~0x00000002u;
 }
 inline ::google::protobuf::int32 Order::whid() const {
   // @@protoc_insertion_point(field_get:Order.whid)
   return whid_;
 }
 inline void Order::set_whid(::google::protobuf::int32 value) {
-  _has_bits_[0] |= 0x00000004u;
+  _has_bits_[0] |= 0x00000002u;
   whid_ = value;
   // @@protoc_insertion_point(field_set:Order.whid)
 }
 
 // required int32 x = 2;
 inline bool Order::has_x() const {
-  return (_has_bits_[0] & 0x00000008u) != 0;
+  return (_has_bits_[0] & 0x00000004u) != 0;
 }
 inline void Order::clear_x() {
   x_ = 0;
-  _has_bits_[0] &= ~0x00000008u;
+  _has_bits_[0] &= ~0x00000004u;
 }
 inline ::google::protobuf::int32 Order::x() const {
   // @@protoc_insertion_point(field_get:Order.x)
   return x_;
 }
 inline void Order::set_x(::google::protobuf::int32 value) {
-  _has_bits_[0] |= 0x00000008u;
+  _has_bits_[0] |= 0x00000004u;
   x_ = value;
   // @@protoc_insertion_point(field_set:Order.x)
 }
 
 // required int32 y = 3;
 inline bool Order::has_y() const {
-  return (_has_bits_[0] & 0x00000040u) != 0;
+  return (_has_bits_[0] & 0x00000020u) != 0;
 }
 inline void Order::clear_y() {
   y_ = 0;
-  _has_bits_[0] &= ~0x00000040u;
+  _has_bits_[0] &= ~0x00000020u;
 }
 inline ::google::protobuf::int32 Order::y() const {
   // @@protoc_insertion_point(field_get:Order.y)
   return y_;
 }
 inline void Order::set_y(::google::protobuf::int32 value) {
-  _has_bits_[0] |= 0x00000040u;
+  _has_bits_[0] |= 0x00000020u;
   y_ = value;
   // @@protoc_insertion_point(field_set:Order.y)
 }
 
 // required int64 packageid = 4;
 inline bool Order::has_packageid() const {
-  return (_has_bits_[0] & 0x00000010u) != 0;
+  return (_has_bits_[0] & 0x00000008u) != 0;
 }
 inline void Order::clear_packageid() {
   packageid_ = PROTOBUF_LONGLONG(0);
-  _has_bits_[0] &= ~0x00000010u;
+  _has_bits_[0] &= ~0x00000008u;
 }
 inline ::google::protobuf::int64 Order::packageid() const {
   // @@protoc_insertion_point(field_get:Order.packageid)
   return packageid_;
 }
 inline void Order::set_packageid(::google::protobuf::int64 value) {
-  _has_bits_[0] |= 0x00000010u;
+  _has_bits_[0] |= 0x00000008u;
   packageid_ = value;
   // @@protoc_insertion_point(field_set:Order.packageid)
 }
@@ -1946,129 +1538,52 @@ inline void Order::set_allocated_upsusername(::std::string* upsusername) {
   // @@protoc_insertion_point(field_set_allocated:Order.upsusername)
 }
 
-// required .Product item = 6;
-inline bool Order::has_item() const {
-  return (_has_bits_[0] & 0x00000002u) != 0;
+// repeated .Product item = 6;
+inline int Order::item_size() const {
+  return item_.size();
 }
 inline void Order::clear_item() {
-  if (item_ != nullptr) item_->Clear();
-  _has_bits_[0] &= ~0x00000002u;
+  item_.Clear();
 }
-inline const ::Product& Order::item() const {
-  const ::Product* p = item_;
-  // @@protoc_insertion_point(field_get:Order.item)
-  return p != nullptr ? *p : *reinterpret_cast<const ::Product*>(
-      &::_Product_default_instance_);
-}
-inline ::Product* Order::release_item() {
-  // @@protoc_insertion_point(field_release:Order.item)
-  _has_bits_[0] &= ~0x00000002u;
-  ::Product* temp = item_;
-  item_ = nullptr;
-  return temp;
-}
-inline ::Product* Order::mutable_item() {
-  _has_bits_[0] |= 0x00000002u;
-  if (item_ == nullptr) {
-    auto* p = CreateMaybeMessage<::Product>(GetArenaNoVirtual());
-    item_ = p;
-  }
+inline ::Product* Order::mutable_item(int index) {
   // @@protoc_insertion_point(field_mutable:Order.item)
-  return item_;
+  return item_.Mutable(index);
 }
-inline void Order::set_allocated_item(::Product* item) {
-  ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
-  if (message_arena == nullptr) {
-    delete item_;
-  }
-  if (item) {
-    ::google::protobuf::Arena* submessage_arena = nullptr;
-    if (message_arena != submessage_arena) {
-      item = ::google::protobuf::internal::GetOwnedMessage(
-          message_arena, item, submessage_arena);
-    }
-    _has_bits_[0] |= 0x00000002u;
-  } else {
-    _has_bits_[0] &= ~0x00000002u;
-  }
-  item_ = item;
-  // @@protoc_insertion_point(field_set_allocated:Order.item)
+inline ::google::protobuf::RepeatedPtrField< ::Product >*
+Order::mutable_item() {
+  // @@protoc_insertion_point(field_mutable_list:Order.item)
+  return &item_;
+}
+inline const ::Product& Order::item(int index) const {
+  // @@protoc_insertion_point(field_get:Order.item)
+  return item_.Get(index);
+}
+inline ::Product* Order::add_item() {
+  // @@protoc_insertion_point(field_add:Order.item)
+  return item_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::Product >&
+Order::item() const {
+  // @@protoc_insertion_point(field_list:Order.item)
+  return item_;
 }
 
 // required int64 seqnum = 7;
 inline bool Order::has_seqnum() const {
-  return (_has_bits_[0] & 0x00000020u) != 0;
+  return (_has_bits_[0] & 0x00000010u) != 0;
 }
 inline void Order::clear_seqnum() {
   seqnum_ = PROTOBUF_LONGLONG(0);
-  _has_bits_[0] &= ~0x00000020u;
+  _has_bits_[0] &= ~0x00000010u;
 }
 inline ::google::protobuf::int64 Order::seqnum() const {
   // @@protoc_insertion_point(field_get:Order.seqnum)
   return seqnum_;
 }
 inline void Order::set_seqnum(::google::protobuf::int64 value) {
-  _has_bits_[0] |= 0x00000020u;
+  _has_bits_[0] |= 0x00000010u;
   seqnum_ = value;
   // @@protoc_insertion_point(field_set:Order.seqnum)
-}
-
-// -------------------------------------------------------------------
-
-// Load
-
-// required bool isloading = 1;
-inline bool Load::has_isloading() const {
-  return (_has_bits_[0] & 0x00000004u) != 0;
-}
-inline void Load::clear_isloading() {
-  isloading_ = false;
-  _has_bits_[0] &= ~0x00000004u;
-}
-inline bool Load::isloading() const {
-  // @@protoc_insertion_point(field_get:Load.isloading)
-  return isloading_;
-}
-inline void Load::set_isloading(bool value) {
-  _has_bits_[0] |= 0x00000004u;
-  isloading_ = value;
-  // @@protoc_insertion_point(field_set:Load.isloading)
-}
-
-// required int64 packageid = 2;
-inline bool Load::has_packageid() const {
-  return (_has_bits_[0] & 0x00000001u) != 0;
-}
-inline void Load::clear_packageid() {
-  packageid_ = PROTOBUF_LONGLONG(0);
-  _has_bits_[0] &= ~0x00000001u;
-}
-inline ::google::protobuf::int64 Load::packageid() const {
-  // @@protoc_insertion_point(field_get:Load.packageid)
-  return packageid_;
-}
-inline void Load::set_packageid(::google::protobuf::int64 value) {
-  _has_bits_[0] |= 0x00000001u;
-  packageid_ = value;
-  // @@protoc_insertion_point(field_set:Load.packageid)
-}
-
-// required int64 seqnum = 3;
-inline bool Load::has_seqnum() const {
-  return (_has_bits_[0] & 0x00000002u) != 0;
-}
-inline void Load::clear_seqnum() {
-  seqnum_ = PROTOBUF_LONGLONG(0);
-  _has_bits_[0] &= ~0x00000002u;
-}
-inline ::google::protobuf::int64 Load::seqnum() const {
-  // @@protoc_insertion_point(field_get:Load.seqnum)
-  return seqnum_;
-}
-inline void Load::set_seqnum(::google::protobuf::int64 value) {
-  _has_bits_[0] |= 0x00000002u;
-  seqnum_ = value;
-  // @@protoc_insertion_point(field_set:Load.seqnum)
 }
 
 // -------------------------------------------------------------------
@@ -2093,7 +1608,7 @@ inline void Deliver::set_packageid(::google::protobuf::int64 value) {
   // @@protoc_insertion_point(field_set:Deliver.packageid)
 }
 
-// required int64 seqnum = 2;
+// required int64 seqnum = 3;
 inline bool Deliver::has_seqnum() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
@@ -2113,184 +1628,78 @@ inline void Deliver::set_seqnum(::google::protobuf::int64 value) {
 
 // -------------------------------------------------------------------
 
-// ConnectedWorld
+// AWarehouse
 
-// required bool isconnected = 1;
-inline bool ConnectedWorld::has_isconnected() const {
-  return (_has_bits_[0] & 0x00000002u) != 0;
-}
-inline void ConnectedWorld::clear_isconnected() {
-  isconnected_ = false;
-  _has_bits_[0] &= ~0x00000002u;
-}
-inline bool ConnectedWorld::isconnected() const {
-  // @@protoc_insertion_point(field_get:ConnectedWorld.isconnected)
-  return isconnected_;
-}
-inline void ConnectedWorld::set_isconnected(bool value) {
-  _has_bits_[0] |= 0x00000002u;
-  isconnected_ = value;
-  // @@protoc_insertion_point(field_set:ConnectedWorld.isconnected)
-}
-
-// required int64 seqnum = 2;
-inline bool ConnectedWorld::has_seqnum() const {
+// required int32 id = 1;
+inline bool AWarehouse::has_id() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
-inline void ConnectedWorld::clear_seqnum() {
-  seqnum_ = PROTOBUF_LONGLONG(0);
+inline void AWarehouse::clear_id() {
+  id_ = 0;
   _has_bits_[0] &= ~0x00000001u;
 }
-inline ::google::protobuf::int64 ConnectedWorld::seqnum() const {
-  // @@protoc_insertion_point(field_get:ConnectedWorld.seqnum)
-  return seqnum_;
+inline ::google::protobuf::int32 AWarehouse::id() const {
+  // @@protoc_insertion_point(field_get:AWarehouse.id)
+  return id_;
 }
-inline void ConnectedWorld::set_seqnum(::google::protobuf::int64 value) {
+inline void AWarehouse::set_id(::google::protobuf::int32 value) {
   _has_bits_[0] |= 0x00000001u;
-  seqnum_ = value;
-  // @@protoc_insertion_point(field_set:ConnectedWorld.seqnum)
+  id_ = value;
+  // @@protoc_insertion_point(field_set:AWarehouse.id)
 }
 
-// -------------------------------------------------------------------
+// required int32 x = 2;
+inline bool AWarehouse::has_x() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void AWarehouse::clear_x() {
+  x_ = 0;
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline ::google::protobuf::int32 AWarehouse::x() const {
+  // @@protoc_insertion_point(field_get:AWarehouse.x)
+  return x_;
+}
+inline void AWarehouse::set_x(::google::protobuf::int32 value) {
+  _has_bits_[0] |= 0x00000002u;
+  x_ = value;
+  // @@protoc_insertion_point(field_set:AWarehouse.x)
+}
 
-// User
+// required int32 y = 3;
+inline bool AWarehouse::has_y() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void AWarehouse::clear_y() {
+  y_ = 0;
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline ::google::protobuf::int32 AWarehouse::y() const {
+  // @@protoc_insertion_point(field_get:AWarehouse.y)
+  return y_;
+}
+inline void AWarehouse::set_y(::google::protobuf::int32 value) {
+  _has_bits_[0] |= 0x00000008u;
+  y_ = value;
+  // @@protoc_insertion_point(field_set:AWarehouse.y)
+}
 
-// required int64 userid = 1;
-inline bool User::has_userid() const {
+// required int64 seqnum = 4;
+inline bool AWarehouse::has_seqnum() const {
   return (_has_bits_[0] & 0x00000004u) != 0;
 }
-inline void User::clear_userid() {
-  userid_ = PROTOBUF_LONGLONG(0);
+inline void AWarehouse::clear_seqnum() {
+  seqnum_ = PROTOBUF_LONGLONG(0);
   _has_bits_[0] &= ~0x00000004u;
 }
-inline ::google::protobuf::int64 User::userid() const {
-  // @@protoc_insertion_point(field_get:User.userid)
-  return userid_;
+inline ::google::protobuf::int64 AWarehouse::seqnum() const {
+  // @@protoc_insertion_point(field_get:AWarehouse.seqnum)
+  return seqnum_;
 }
-inline void User::set_userid(::google::protobuf::int64 value) {
+inline void AWarehouse::set_seqnum(::google::protobuf::int64 value) {
   _has_bits_[0] |= 0x00000004u;
-  userid_ = value;
-  // @@protoc_insertion_point(field_set:User.userid)
-}
-
-// required string username = 2;
-inline bool User::has_username() const {
-  return (_has_bits_[0] & 0x00000001u) != 0;
-}
-inline void User::clear_username() {
-  username_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  _has_bits_[0] &= ~0x00000001u;
-}
-inline const ::std::string& User::username() const {
-  // @@protoc_insertion_point(field_get:User.username)
-  return username_.GetNoArena();
-}
-inline void User::set_username(const ::std::string& value) {
-  _has_bits_[0] |= 0x00000001u;
-  username_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:User.username)
-}
-#if LANG_CXX11
-inline void User::set_username(::std::string&& value) {
-  _has_bits_[0] |= 0x00000001u;
-  username_.SetNoArena(
-    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:User.username)
-}
-#endif
-inline void User::set_username(const char* value) {
-  GOOGLE_DCHECK(value != nullptr);
-  _has_bits_[0] |= 0x00000001u;
-  username_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:User.username)
-}
-inline void User::set_username(const char* value, size_t size) {
-  _has_bits_[0] |= 0x00000001u;
-  username_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-      ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:User.username)
-}
-inline ::std::string* User::mutable_username() {
-  _has_bits_[0] |= 0x00000001u;
-  // @@protoc_insertion_point(field_mutable:User.username)
-  return username_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-inline ::std::string* User::release_username() {
-  // @@protoc_insertion_point(field_release:User.username)
-  if (!has_username()) {
-    return nullptr;
-  }
-  _has_bits_[0] &= ~0x00000001u;
-  return username_.ReleaseNonDefaultNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-inline void User::set_allocated_username(::std::string* username) {
-  if (username != nullptr) {
-    _has_bits_[0] |= 0x00000001u;
-  } else {
-    _has_bits_[0] &= ~0x00000001u;
-  }
-  username_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), username);
-  // @@protoc_insertion_point(field_set_allocated:User.username)
-}
-
-// required string password = 3;
-inline bool User::has_password() const {
-  return (_has_bits_[0] & 0x00000002u) != 0;
-}
-inline void User::clear_password() {
-  password_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  _has_bits_[0] &= ~0x00000002u;
-}
-inline const ::std::string& User::password() const {
-  // @@protoc_insertion_point(field_get:User.password)
-  return password_.GetNoArena();
-}
-inline void User::set_password(const ::std::string& value) {
-  _has_bits_[0] |= 0x00000002u;
-  password_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:User.password)
-}
-#if LANG_CXX11
-inline void User::set_password(::std::string&& value) {
-  _has_bits_[0] |= 0x00000002u;
-  password_.SetNoArena(
-    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:User.password)
-}
-#endif
-inline void User::set_password(const char* value) {
-  GOOGLE_DCHECK(value != nullptr);
-  _has_bits_[0] |= 0x00000002u;
-  password_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:User.password)
-}
-inline void User::set_password(const char* value, size_t size) {
-  _has_bits_[0] |= 0x00000002u;
-  password_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-      ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:User.password)
-}
-inline ::std::string* User::mutable_password() {
-  _has_bits_[0] |= 0x00000002u;
-  // @@protoc_insertion_point(field_mutable:User.password)
-  return password_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-inline ::std::string* User::release_password() {
-  // @@protoc_insertion_point(field_release:User.password)
-  if (!has_password()) {
-    return nullptr;
-  }
-  _has_bits_[0] &= ~0x00000002u;
-  return password_.ReleaseNonDefaultNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-inline void User::set_allocated_password(::std::string* password) {
-  if (password != nullptr) {
-    _has_bits_[0] |= 0x00000002u;
-  } else {
-    _has_bits_[0] &= ~0x00000002u;
-  }
-  password_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), password);
-  // @@protoc_insertion_point(field_set_allocated:User.password)
+  seqnum_ = value;
+  // @@protoc_insertion_point(field_set:AWarehouse.seqnum)
 }
 
 // -------------------------------------------------------------------
@@ -2357,7 +1766,37 @@ AUCommands::todeliver() const {
   return todeliver_;
 }
 
-// repeated int64 acks = 3;
+// repeated .AWarehouse whinfo = 3;
+inline int AUCommands::whinfo_size() const {
+  return whinfo_.size();
+}
+inline void AUCommands::clear_whinfo() {
+  whinfo_.Clear();
+}
+inline ::AWarehouse* AUCommands::mutable_whinfo(int index) {
+  // @@protoc_insertion_point(field_mutable:AUCommands.whinfo)
+  return whinfo_.Mutable(index);
+}
+inline ::google::protobuf::RepeatedPtrField< ::AWarehouse >*
+AUCommands::mutable_whinfo() {
+  // @@protoc_insertion_point(field_mutable_list:AUCommands.whinfo)
+  return &whinfo_;
+}
+inline const ::AWarehouse& AUCommands::whinfo(int index) const {
+  // @@protoc_insertion_point(field_get:AUCommands.whinfo)
+  return whinfo_.Get(index);
+}
+inline ::AWarehouse* AUCommands::add_whinfo() {
+  // @@protoc_insertion_point(field_add:AUCommands.whinfo)
+  return whinfo_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::AWarehouse >&
+AUCommands::whinfo() const {
+  // @@protoc_insertion_point(field_list:AUCommands.whinfo)
+  return whinfo_;
+}
+
+// repeated int64 acks = 4;
 inline int AUCommands::acks_size() const {
   return acks_.size();
 }
@@ -2461,46 +1900,6 @@ inline void Truck::set_seqnum(::google::protobuf::int64 value) {
   _has_bits_[0] |= 0x00000008u;
   seqnum_ = value;
   // @@protoc_insertion_point(field_set:Truck.seqnum)
-}
-
-// -------------------------------------------------------------------
-
-// ConnectWorld
-
-// required int64 worldid = 1;
-inline bool ConnectWorld::has_worldid() const {
-  return (_has_bits_[0] & 0x00000001u) != 0;
-}
-inline void ConnectWorld::clear_worldid() {
-  worldid_ = PROTOBUF_LONGLONG(0);
-  _has_bits_[0] &= ~0x00000001u;
-}
-inline ::google::protobuf::int64 ConnectWorld::worldid() const {
-  // @@protoc_insertion_point(field_get:ConnectWorld.worldid)
-  return worldid_;
-}
-inline void ConnectWorld::set_worldid(::google::protobuf::int64 value) {
-  _has_bits_[0] |= 0x00000001u;
-  worldid_ = value;
-  // @@protoc_insertion_point(field_set:ConnectWorld.worldid)
-}
-
-// required int64 seqnum = 2;
-inline bool ConnectWorld::has_seqnum() const {
-  return (_has_bits_[0] & 0x00000002u) != 0;
-}
-inline void ConnectWorld::clear_seqnum() {
-  seqnum_ = PROTOBUF_LONGLONG(0);
-  _has_bits_[0] &= ~0x00000002u;
-}
-inline ::google::protobuf::int64 ConnectWorld::seqnum() const {
-  // @@protoc_insertion_point(field_get:ConnectWorld.seqnum)
-  return seqnum_;
-}
-inline void ConnectWorld::set_seqnum(::google::protobuf::int64 value) {
-  _has_bits_[0] |= 0x00000002u;
-  seqnum_ = value;
-  // @@protoc_insertion_point(field_set:ConnectWorld.seqnum)
 }
 
 // -------------------------------------------------------------------
@@ -2640,12 +2039,6 @@ UACommands::mutable_acks() {
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
-// -------------------------------------------------------------------
-
-// -------------------------------------------------------------------
-
-// -------------------------------------------------------------------
-
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

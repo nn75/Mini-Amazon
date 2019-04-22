@@ -187,7 +187,7 @@ void WebProcessor::get_buy_info() {
     }
 
     //Decide which warehouse to buy more stock according to dist
-    string decide_warehouse = "SELECT * FROM wharehouse;";
+    string decide_warehouse = "SELECT * FROM warehouse;";
     vector<vector<string>> res_wh = dbi->run_query_with_results(decide_warehouse);
     int min_dist = INT_MAX;
     int closest_wh_id = 0;
@@ -206,11 +206,12 @@ void WebProcessor::get_buy_info() {
             closest_wh_y = wh_y;
         }
     }
+    cout << "The closest warehouse id is:" << closest_wh_id << endl;
 
     //Get the product_id from the closest warehouse
     string get_product_id = "SELECT * FROM orders_product WHERE wh_id = " +
                             to_string(closest_wh_id) +
-                            "AND product_name = " + product_name + ";";
+                            " AND product_name = '" + product_name + "';";
     vector<vector<string>> res_pid = dbi->run_query_with_results(get_product_id);
     if (res_pid .size() == 1) {
         // There exists such product in this warehouse
@@ -218,12 +219,12 @@ void WebProcessor::get_buy_info() {
         int stock = atoi(res_pid[0][4].c_str());
 
         // If the (stock - amount) < 100, send purchase more message to world, leave order in pending order
-        if (stock - amount <100) {  
+        if (stock - amount < 100) {  
             // Add to real order list, set status stocking
             std::string add_stocking_order =
                 "INSERT INTO orders_order(tracking_number, user_id, "
                 "ups_account, "
-                "product_id, wh_id, truck_id,status,adr_x,adr_y) VALUES ( " +
+                "product_id, wh_id, truck_id,status,adr_x,adr_y, amount) VALUES ( " +
                 to_string(tracking_number) + ", " + to_string(user_id) + ", '" +
                 ups_account + "', " + to_string(product_id) + ", " +
                 to_string(closest_wh_id) + ", " + to_string(-1) + ", " +
@@ -253,7 +254,7 @@ void WebProcessor::get_buy_info() {
             string add_packing_order =
                 "INSERT INTO orders_order(tracking_number, user_id, "
                 "ups_account, "
-                "product_id, wh_id, truck_id,status,adr_x,adr_y) VALUES ( " +
+                "product_id, wh_id, truck_id,status,adr_x,adr_y, amount) VALUES ( " +
                 to_string(tracking_number) + ", " + to_string(user_id) + ", '" +
                 ups_account + "', " + to_string(product_id) + ", " +
                 to_string(closest_wh_id) + ", " + to_string(-1) + ", " +
@@ -302,8 +303,11 @@ void WebProcessor::get_buy_info() {
             mtx.unlock();/////unlock
             send_ups_queue.pushback(order_pair);
             cout << "stock enough send truck to ups" << endl;
+        }else{
+            cout << "Stock limit error" << endl;
         }
     } else {
         cout << "Use wh_id and product_name to get product failed\n";
+        
     }
 }

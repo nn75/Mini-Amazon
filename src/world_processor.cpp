@@ -59,25 +59,27 @@ void WorldProcessor::world_command_process() {
                     ack_res.add_acks(ship_seq);
                     pair<long int, ACommands> r_acks(-1, ack_res);
                     send_world_queue.pushback(r_acks);
-                    
+
+                    cout << endl;
                     cout << "AResponse ALoaded loaded:" << endl;
                     cout << "loaded ship_id:" << ship_id << endl;
                     cout << "loaded seqnum:" << ship_seq  << endl;
+                    cout << endl;
 
                     // database: if world said order is loaded, update order status to "delivering"
                     string update_to_delivering ="UPDATE orders_order SET status = 'delivering' WHERE tracking_number= " + to_string(ship_id) + ";";
                     dbi->run_query(update_to_delivering); 
 
                     // ask ups to deliver
-                    // AUCommands ups_deliver_msg;
-                    // Deliver* ups_deliver = ups_deliver_msg.add_todeliver();
-                    // ups_deliver->set_packageid(ship_id);
-                    // mtx.lock();  //////lock
-                    // ups_deliver->set_seqnum(ups_seqnum);
-                    // pair<long int, AUCommands> ups_deliver_pair(ups_seqnum, ups_deliver_msg);
-                    // ups_seqnum++;
-                    // mtx.unlock();  /////unlock
-                    // send_ups_queue.pushback(ups_deliver_pair);
+                    AUCommands ups_deliver_msg;
+                    Deliver* ups_deliver = ups_deliver_msg.add_todeliver();
+                    ups_deliver->set_packageid(ship_id);
+                    mtx.lock();  //////lock
+                    ups_deliver->set_seqnum(ups_seqnum);
+                    pair<long int, AUCommands> ups_deliver_pair(ups_seqnum, ups_deliver_msg);
+                    ups_seqnum++;
+                    mtx.unlock();  /////unlock
+                    send_ups_queue.pushback(ups_deliver_pair);
                     cout << "ask ups to deliver, leave here for ups testing" << endl;
                 }
             }
@@ -89,10 +91,12 @@ void WorldProcessor::world_command_process() {
                     ack_res.add_acks(ship_seq);
                     pair<long int, ACommands> r_acks(-1, ack_res);
                     send_world_queue.pushback(r_acks);
-                    
+
+                    cout << endl;                    
                     cout << "AResponse APacked ready:" << endl;
                     cout << "ready ship_id:" << ship_id << endl;
                     cout << "ready seqnum:" << ship_seq  << endl;
+                    cout << endl;
 
                     // database: if world said the order is packed, update order status to "packed"
                     string update_to_packed =
@@ -145,6 +149,7 @@ void WorldProcessor::world_command_process() {
                     pair<long int, ACommands> r_acks(-1, ack_res);
                     send_world_queue.pushback(r_acks);
 
+                    cout << endl;
                     cout << "AResponse APurchaseMore arrived:" << endl;
                     cout << "arrived whnum:" << wh_num << endl;
                     cout << "arrived things -> id:" << product_id << endl;
@@ -152,6 +157,7 @@ void WorldProcessor::world_command_process() {
                          << product_desciption << endl;
                     cout << "arrived things -> count:" << product_count << endl;
                     cout << "arrived seqnum:" << arrived_seqnum << endl;
+                    cout << endl;
 
                     // database: If new product stock arrived at warehouse,
                     // update product table, increase its stock to 500
@@ -161,35 +167,35 @@ void WorldProcessor::world_command_process() {
                     dbi->run_query(increase_stock);
 
                     //Find the first stocking order meet prduct_id, count and wh_num, set its status to packing
-                    string first_enough_order = "SELECT TOP 1 * FROM orders_order WHERE product_id = " + to_string(product_id) +
-                        " AND wh_id = " + to_string(wh_num) + " AND amount = " + to_string(product_count - 500) + ";";
+                    string first_enough_order = "SELECT * FROM orders_order WHERE product_id = " + to_string(product_id) +
+                        " AND wh_id = " + to_string(wh_num) + " AND amount = " + to_string(product_count - 500) + " LIMIT 1 ;";
                     vector<vector<string>> res_enough= dbi->run_query_with_results(first_enough_order);
                     int order_id = 0;
                     if(res_enough.size() == 1){
                         cout << "Got one enough product" << endl;
-                        order_id = atoi(res_enough[0][1].c_str());
+                        order_id = atoi(res_enough[0][0].c_str());
                         string stocking_to_packing = "UPDATE orders_order SET status = 'packing' WHERE tracking_number = "+to_string(order_id)+";";
                         dbi->run_query(stocking_to_packing);
+                        //And send message pack message to world
+                        ACommands topack;
+                        APack *ap_topack = topack.add_topack();
+                        ap_topack->set_whnum(wh_num);
+                        AProduct *pd_topack = ap_topack->add_things();
+                        pd_topack->set_id(product_id);
+                        pd_topack->set_description(product_desciption);
+                        pd_topack->set_count(product_count - 500);
+                        ap_topack->set_shipid(order_id);
+                        mtx.lock();  //////lock
+                        ap_topack->set_seqnum(world_seqnum);
+                        pair<long int, ACommands> topack_pair(world_seqnum, topack);
+                        world_seqnum++;
+                        mtx.unlock();  /////unlock
+                        send_world_queue.pushback(topack_pair);
+                        cout << "after buy, stock enough send topack to world" << endl;
                     }else{
                         cout << "No such stocking order" << endl;
                     }
 
-                    //And send message pack message to world
-                    ACommands topack;
-                    APack *ap_topack = topack.add_topack();
-                    ap_topack->set_whnum(wh_num);
-                    AProduct *pd_topack = ap_topack->add_things();
-                    pd_topack->set_id(product_id);
-                    pd_topack->set_description(product_desciption);
-                    pd_topack->set_count(product_count - 500);
-                    ap_topack->set_shipid(order_id);
-                    mtx.lock();  //////lock
-                    ap_topack->set_seqnum(world_seqnum);
-                    pair<long int, ACommands> topack_pair(world_seqnum, topack);
-                    world_seqnum++;
-                    mtx.unlock();  /////unlock
-                    send_world_queue.pushback(topack_pair);
-                    cout << "after buy, stock enough send topack to world" << endl;
 
                 }
             }
@@ -200,10 +206,17 @@ void WorldProcessor::world_command_process() {
                     int originseqnum = tmp_msg.error(i).originseqnum ();
                     int seqnum= tmp_msg.error(i).seqnum();
 
+                    // add ack to ack response
+                    ack_res.add_acks(seqnum);
+                    pair<long int, ACommands> r_acks(-1, ack_res);
+                    send_world_queue.pushback(r_acks);
+
+                    cout << endl;
                     cout << "AResponse AErr error:" << endl;
                     cout << "error err:" << err << endl;
                     cout << "error originseqnum:" << originseqnum<< endl;
                     cout << "error seqnum:" << seqnum<< endl;
+                    cout << endl;
                 }
             }
         }

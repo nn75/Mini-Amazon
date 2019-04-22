@@ -7,6 +7,7 @@
 #include "amazon_ups.pb.h"
 #include "message_queue.h"
 #include "world_amazon.pb.h"
+#include "amazon_ups.pb.h"
 
 #include "ups_communicator.h"
 #include "world_communicator.h"
@@ -18,7 +19,7 @@
 using namespace std;
 using namespace pqxx;
 
-// This is only used for test class World
+
 int main(int argc, char* argv[]) {
     GOOGLE_PROTOBUF_VERIFY_VERSION;
 
@@ -35,7 +36,7 @@ int main(int argc, char* argv[]) {
     WorldCommunicator* world_communicator = new WorldCommunicator(3, houses);
 
     // Initialize warehouse and world_communicator
-    // UpsCommunicator* ups_communicator = new UpsCommunicator(0, NULL);
+    UpsCommunicator* ups_communicator = new UpsCommunicator(0, NULL);
 
     // Initialize message queue and multithread
     message_queue<pair<long int, ACommands> > s_w_q;   // Send world queue
@@ -47,29 +48,72 @@ int main(int argc, char* argv[]) {
     long int unum = 0;
     mutex mt;
 
-    // Test for web connect
-    // web_processor->connect();
+
 
     // Test for world connect and create
-    cout << "\nTest 1: Connect to 127.0.0.1 without worldid" << endl;
-    world_communicator->connect("localhost");
+    // cout << "\nTest 1: Connect to 127.0.0.1 without worldid" << endl;
+    // world_communicator->connect("localhost");
 
     // Test for connect to worldid told by ups
-    // cout << "\nTest: Connect to vcm-6873.vm.duke.edu with input worldid"
-    // <<endl; world_communicator->connect("67.159.94.99", worldid_input);
+    cout << "\nTest: Connect to vcm-6873.vm.duke.edu with input worldid"<<endl; 
+    world_communicator->connect("67.159.94.99", worldid_input);
 
     // Test for Ups socket
     // UpsCommunicator ups_communicator(0, NULL);
-    // cout << "\nTest connect ups: Connect to 67.159.94.99" << endl;
-    // ups_communicator->connect("67.159.94.99", worldid_input);
+    cout << "\nTest connect ups: Connect to 67.159.94.99" << endl;
+    ups_communicator->connect("67.159.94.99", worldid_input);
 
     /////////////////////////////////
     /// Testing message start here
     /////////////////////////////////
     // Initialize processors
     WorldProcessor* world_processor = new WorldProcessor(s_w_q, r_w_q, s_u_q, world_communicator, wnum, unum, mt);
-    //UpsProcessor* ups_processor = new UpsProcessor(s_w_q, r_u_q, s_u_q, ups_communicator, wnum, unum, mt); 
-    //WebProcessor* web_processor = new WebProcessor(s_w_q, s_u_q, wnum, unum, mt); 
+    UpsProcessor* ups_processor = new UpsProcessor(s_w_q, r_u_q, s_u_q, ups_communicator, wnum, unum, mt); 
+    WebProcessor* web_processor = new WebProcessor(s_w_q, s_u_q, wnum, unum, mt); 
+
+    // Test for web connect
+    web_processor->connect();
+
+    // send ACommand to world to prepare product in warehouses
+    AUCommands wh_init_1;
+    AWarehouse * wh1 = wh_init_1.add_whinfo();
+    wh1->set_id(1);
+    wh1->set_x(2);
+    wh1->set_y(3);
+    mt.lock();//////lock
+    wh1->set_seqnum(unum);
+    pair<long int, AUCommands> wh_init_1_pair(unum, wh_init_1);
+    unum++;
+    mt.unlock();/////unlock
+    s_u_q.pushback(wh_init_1_pair);
+    cout << "Send ups warehouse1\n";
+
+    AUCommands wh_init_2;
+    AWarehouse * wh2 = wh_init_2.add_whinfo();
+    wh2->set_id(2);
+    wh2->set_x(4);
+    wh2->set_y(6);
+    mt.lock();//////lock
+    wh2->set_seqnum(unum);
+    pair<long int, AUCommands> wh_init_2_pair(unum, wh_init_2);
+    unum++;
+    mt.unlock();/////unlock
+    s_u_q.pushback(wh_init_2_pair);
+    cout << "Send ups warehouse2\n";
+
+    AUCommands wh_init_3;
+    AWarehouse * wh3 = wh_init_3.add_whinfo();
+    wh3->set_id(3);
+    wh3->set_x(6);
+    wh3->set_y(9);
+    mt.lock();//////lock
+    wh3->set_seqnum(unum);
+    pair<long int, AUCommands> wh_init_3_pair(unum, wh_init_3);
+    unum++;
+    mt.unlock();/////unlock
+    s_u_q.pushback(wh_init_3_pair);
+    cout << "Send ups warehouse3\n";
+
     
     //Initialize an ACommand to buy more, and push into send world queue
     ACommands pm;
@@ -78,28 +122,29 @@ int main(int argc, char* argv[]) {
     AProduct* pd = apm->add_things();
     pd->set_id(1);
     pd->set_description("Apple");
-    pd->set_count(450);
-    apm->set_seqnum(0);
+    pd->set_count(550);
+    mt.lock();  //////lock
+    apm->set_seqnum(wnum);
+    pair<long int, ACommands> test1(wnum, pm);
     wnum++;
-    pair<long int, ACommands> test1(0, pm);
+    mt.unlock();  /////unlock
     s_w_q.pushback(test1);
 
-    
 
-    usleep(100000);
+    // usleep(100000);
 
-    ACommands pk;
-    APack* apk = pk.add_topack();
-    apk->set_whnum(1);
-    AProduct* pd2 = apk->add_things();
-    pd2->set_id(1);
-    pd2->set_description("Apple");
-    pd2->set_count(20);
-    apk->set_shipid(7);
-    apk->set_seqnum(1);
-    wnum++;
-    pair<long int, ACommands> test2(1, pk);
-    s_w_q.pushback(test2);
+    // ACommands pk;
+    // APack* apk = pk.add_topack();
+    // apk->set_whnum(1);
+    // AProduct* pd2 = apk->add_things();
+    // pd2->set_id(1);
+    // pd2->set_description("Apple");
+    // pd2->set_count(20);
+    // apk->set_shipid(7);
+    // apk->set_seqnum(1);
+    // wnum++;
+    // pair<long int, ACommands> test2(1, pk);
+    // s_w_q.pushback(test2);
 
 
 
@@ -147,8 +192,8 @@ int main(int argc, char* argv[]) {
     }
 
     world_communicator->disconnect();
-    // ups_communicator->disconnect();
-    // web_processor->disconnect();
+    ups_communicator->disconnect();
+    web_processor->disconnect();
 
     // google::protobuf::ShutdownProtobufLibrary();
 }

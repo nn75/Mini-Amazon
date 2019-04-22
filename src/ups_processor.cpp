@@ -1,4 +1,5 @@
 #include "ups_processor.h"
+#include "database_interface.h"
 #include <pqxx/pqxx>
 
 using namespace pqxx;
@@ -22,6 +23,7 @@ UpsProcessor::UpsProcessor(message_queue<pair<long int, ACommands>>& mq1,
 }
 
 void UpsProcessor::ups_command_process() {
+    database_interface* dbi = new database_interface();
     while (1) {
         if (!recv_ups_queue.if_empty()) {
             UACommands tmp_msg;
@@ -53,45 +55,46 @@ void UpsProcessor::ups_command_process() {
                     int truck_id = tmp_msg.arrived(i).truckid();
                     long int package_id = tmp_msg.arrived(i).packageid();
                     long int arrived_seq = tmp_msg.arrived(i).seqnum();
+
+                    cout << endl;
+                    cout << "UACommand Truck arrived:" << endl;
+                    cout << "arrived wh_id:" << wh_num << endl;
+                    cout << "arrived truck_id:" << truck_id<< endl;
+                    cout << "arrived package_id:" << package_id << endl;
+                    cout << "arrived arrived_seq :" << arrived_seq   << endl;
+                    cout << endl;
+                    
+                    // add ack to ack ups
                     ack_res.add_acks(arrived_seq);
+                    pair<long int, AUCommands> r_acks(-1, ack_res);
+                    send_ups_queue.pushback(r_acks);
 
                     // database: If the ups said the truck is arrived, update
                     // the truck_id in database from -1 to given number
-                    connection C(
-                        "dbname = mini_amazon user = postgres password = "
-                        "passw0rd hostaddr = 67.159.95.41 port = 5432");
-                    if (C.is_open()) {
-                    } else {
-                        cout << "ready = Can't open database" << endl;
-                    }
                     string update_truck =
                         "UPDATE order_orders SET truck_id = " +
                         to_string(truck_id) +
                         " WHERE tracking_number= " + to_string(package_id) +
                         ";";
-                    work W1(C);
-                    W1.exec(update_truck);
-                    W1.commit();
+                    dbi->run_query(update_truck);
 
                     // check status of order, if status == packed, send load
                     // message to world
                     string check_pack =
                         "SELECT order_orders WHERE tracking_number = " +
-                        to_string(package_id) + " AND status = packed ;";
-                    nontransaction N(C);
-                    result R(N.exec(check_pack));
-                    if (R.size() == 1) {
-                        result::const_iterator it = R.begin();
+                        to_string(package_id) + " AND status = 'packed' ;";
+                    vector<vector<string>> res_packed= dbi->run_query_with_results(check_pack);
+                    if (res_packed.size() == 1) {
+                        cout << "Truck arrived and packed" << endl;
                         ACommands world_load_msg;
                         APutOnTruck* put_on_truck = world_load_msg.add_load();
-                        put_on_truck->set_whnum(it[4].as<int>());
-                        put_on_truck->set_truckid(it[5].as<int>());
-                        put_on_truck->set_shipid(it[0].as<long int>());
+                        put_on_truck->set_whnum(atoi(res_packed[0][4].c_str()));
+                        put_on_truck->set_truckid(atoi(res_packed[0][5].c_str()));
+                        put_on_truck->set_shipid((long int)atoi(res_packed[0][0].c_str()));
 
                         mtx.lock();  //////lock
                         put_on_truck->set_seqnum(world_seqnum);
-                        pair<long int, ACommands> world_load_pair(
-                            world_seqnum, world_load_msg);
+                        pair<long int, ACommands> world_load_pair(world_seqnum, world_load_msg);
                         world_seqnum++;
                         mtx.unlock();  /////unlock
                         send_world_queue.pushback(world_load_pair);
@@ -99,46 +102,31 @@ void UpsProcessor::ups_command_process() {
                         // After packed and truck arrived, update order status
                         // to loading
                         string update_to_loading =
-                            "UPDATE order_orders SET status = loading WHERE "
-                            "tracking_number= " +
-                            to_string(package_id) + ";";
-                        work W2(C);
-                        W2.exec(update_to_loading);
-                        W2.commit();
+                            "UPDATE order_orders SET status = loading WHERE tracking_number= " + to_string(package_id) + ";";
+                        dbi->run_query(update_to_loading);
                     }
-                    C.disconnect();
                 }
             }
             if (tmp_msg.finish_size() != 0) {
                 for (int i = 0; i < tmp_msg.finish_size(); i++) {
                     long int package_id = tmp_msg.finish(i).packageid();
                     long int finish_seq = tmp_msg.finish(i).seqnum();
-                    ack_res.add_acks(finish_seq);
+
+                    cout << endl;
+                    cout << "UACommand Delivered finish:" << endl;
                     cout << "ups finish package_id" << package_id << endl;
                     cout << "ups finish finish_seq" << finish_seq << endl;
+                    cout << endl;
+
+                    // add ack to ack ups
+                    ack_res.add_acks(finish_seq);
+                    pair<long int, AUCommands> r_acks(-1, ack_res);
+                    send_ups_queue.pushback(r_acks);
 
                     // database: If ups said
-                    connection C(
-                        "dbname = mini_amazon user = postgres password = "
-                        "passw0rd hostaddr = 67.159.95.41 port = 5432");
-                    if (C.is_open()) {
-                    } else {
-                        cout << "arrived = Can't open database" << endl;
-                    }
-                    string update_delivered =
-                        "UPDATE orders_order SET status='delivered' WHERE "
-                        "tracking_number = " +
-                        to_string(package_id) + ";";
-                    work W(C);
-                    W.exec(update_delivered);
-                    W.commit();
-                    C.disconnect();
+                    string update_delivered = "UPDATE orders_order SET status='delivered' WHERE tracking_number = " + to_string(package_id) + ";";
+                    dbi->run_query(update_delivered);
                 }
-            }
-            if (ack_res.acks_size() != 0) {
-                pair<long int, AUCommands> r_acks(-1, ack_res);
-                cout << "stupid" << ack_res.acks(0) << endl;
-                send_ups_queue.pushback(r_acks);
             }
         }  // not if_empty
     }      // While
