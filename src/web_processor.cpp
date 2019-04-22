@@ -12,6 +12,7 @@
 #include <thread>
 
 #include "web_processor.h"
+#include "database_interface.h"
 
 using namespace std;
 using namespace pqxx;
@@ -151,60 +152,51 @@ void WebProcessor::get_buy_info() {
     // string ups_account = tokens[1];
 
     cout << "\nTracking number: " << tracking_number;
-
-    // cout << "\nTracking number: " << tracking_number
     //      << "\nUPS account: " << ups_account << endl;
+
+    database_interface* dbi = new database_interface();
 
     // 1) Take out pending order and add to order table
     // 2) Send AUCommands to ups to send truck
     // 3) Send ACommands to world to pack product (If the stock is not enough,
     // send ToPurchaseMore)
 
-    // 1.1) Get info from orders_pendingorder
-    connection C(
-        "dbname = mini_amazon user = postgres password = passw0rd hostaddr = "
-        "67.159.95.41 port = 5432");
-    if (C.is_open()) {
-    } else {
-        cout << "ready = Can't open database" << endl;
-    }
+    // Get info from orders_pendingorder
     string get_pending_order =
         "SELECT * FROM orders_pendingorder WHERE tracking_number = " +
         tracking_number + ";";
-    nontransaction N(C);
-    result R1(N.exec(get_pending_order));
-    long int tracking_number_int = atoi(tracking_number.c_str());
+    vector<vector<string>> res_pending = dbi->run_query_with_results(get_pending_order);
+    long int tracking_number_int = (long int) atoi(tracking_number.c_str());
     int user_id;
     string product_name;
     int amount;
     int address_x;
     int address_y;
     string ups_account;
-    if (R1.size() == 1) {
-        result::const_iterator it1 = R1.begin();
+    if (res_pending.size() == 1) {
         // tracking number,0;
         // creditcard, 1;
-        user_id = it1[2].as<int>();
-        product_name = it1[3].as<string>();
-        amount = it1[4].as<int>();
-        address_x = it1[5].as<int>();
-        address_y = it1[6].as<int>();
-        ups_account = it1[7].as<string>();
+        user_id = atoi(res_pending[0][2].c_str());
+        product_name = res_pending[0][3];
+        amount = atoi(res_pending[0][4].c_str());
+        address_x = atoi(res_pending[0][5].c_str());
+        address_y = atoi(res_pending[0][6].c_str());
+        ups_account = res_pending[0][7];
     } else {
         cout << "Use tracking number to get pending order failed\n";
     }
 
-    // 1.2) Decide which warehouse to buy more stock according to dist
+    //Decide which warehouse to buy more stock according to dist
     string decide_warehouse = "SELECT * FROM wharehouse;";
-    result R2(N.exec(decide_warehouse));
+    vector<vector<string>> res_wh = dbi->run_query_with_results(decide_warehouse);
     int min_dist = INT_MAX;
     int closest_wh_id = 0;
     int closest_wh_x = 0;
     int closest_wh_y = 0;
-    for (result::const_iterator it2 = R2.begin(); it2 != R2.end(); it2++) {
-        int wh_id = it2[0].as<int>();
-        int wh_x = it2[1].as<int>();
-        int wh_y = it2[2].as<int>();
+    for (int i = 0; i < res_wh.size(); i++) {
+        int wh_id = atoi(res_wh[i][0].c_str());
+        int wh_x = atoi(res_wh[i][1].c_str());
+        int wh_y = atoi(res_wh[i][2].c_str());
         int curr_dist = sqrt((address_x - wh_x) * (address_x - wh_x) +
                              (address_y - wh_y) * (address_y - wh_y));
         if (curr_dist < min_dist) {
@@ -215,33 +207,30 @@ void WebProcessor::get_buy_info() {
         }
     }
 
-    // 1.3) Get the product_id from the closest warehouse
+    //Get the product_id from the closest warehouse
     string get_product_id = "SELECT * FROM orders_product WHERE wh_id = " +
                             to_string(closest_wh_id) +
                             "AND product_name = " + product_name + ";";
-    result R3(N.exec(get_product_id));
-    if (R3.size() == 1) {
+    vector<vector<string>> res_pid = dbi->run_query_with_results(get_product_id);
+    if (res_pid .size() == 1) {
         // There exists such product in this warehouse
-        result::const_iterator it3 = R3.begin();
-        int product_id = it3[1].as<int>();
-        int stock = it3[4].as<int>();
+        int product_id = atoi(res_pid[0][1].c_str());
+        int stock = atoi(res_pid[0][4].c_str());
 
-        if (stock - amount <
-            100) {  // If the (stock - amount) < 100, send purchase more message
-                    // to world, leave order in pending order
+        // If the (stock - amount) < 100, send purchase more message to world, leave order in pending order
+        if (stock - amount <100) {  
             // Add to real order list, set status stocking
             std::string add_stocking_order =
                 "INSERT INTO orders_order(tracking_number, user_id, "
                 "ups_account, "
                 "product_id, wh_id, truck_id,status,adr_x,adr_y) VALUES ( " +
-                to_string(tracking_number) + ", " + to_string(user_id) + ", " +
-                ups_account + ", " + to_string(product_id) + ", " +
+                to_string(tracking_number) + ", " + to_string(user_id) + ", '" +
+                ups_account + "', " + to_string(product_id) + ", " +
                 to_string(closest_wh_id) + ", " + to_string(-1) + ", " +
-                "stocking" + ", " + to_string(address_x) + ", " +
+                "'stocking'" + ", " + to_string(address_x) + ", " +
                 to_string(address_y) + ");";
-            work W(C);
-            W.exec(add_stocking_order);
-            W.commit();
+            dbi->run_query(add_stocking_order);
+
             ////Send purchase more message to world
             int count = 500 + amount;
             ACommands buy;
@@ -257,11 +246,25 @@ void WebProcessor::get_buy_info() {
             world_seqnum++;
             mtx.unlock();  /////unlock
             send_world_queue.pushback(buy_pair);
-        } else if (stock - amount >=
-                   100) {  // If stock enough send pack message to world and
-                           // send truck message to ups, add it to real order
-                           // table
+
+        } else if (stock - amount >= 100) {  
+            // If stock enough send pack message to world and send truck message to ups, add it to real order table
             // Add to real order list, set status packing
+            string add_packing_order =
+                "INSERT INTO orders_order(tracking_number, user_id, "
+                "ups_account, "
+                "product_id, wh_id, truck_id,status,adr_x,adr_y) VALUES ( " +
+                to_string(tracking_number) + ", " + to_string(user_id) + ", '" +
+                ups_account + "', " + to_string(product_id) + ", " +
+                to_string(closest_wh_id) + ", " + to_string(-1) + ", " +
+                "'packing'" + ", " + to_string(address_x) + ", " +
+                to_string(address_y) + ", " + to_string(amount) + ");";
+            dbi->run_query(add_packing_order);
+
+            //Minus stock of product
+            string minus_stock = "UPDATE orders_product SET stock = stock-"+to_string(amount)+" WHERE product_id = " + to_string(product_id) +
+                        " AND wh_id = " + to_string(closest_wh_id) + ";";
+            dbi->run_query(minus_stock);
 
             // Send pack message to world
             ACommands topack;
@@ -278,25 +281,27 @@ void WebProcessor::get_buy_info() {
             world_seqnum++;
             mtx.unlock();  /////unlock
             send_world_queue.pushback(topack_pair);
+            cout << "stock enough send topack to world" << endl;
 
             // Send truck message to ups
-            // AUCommands od;
-            // Order* ord = od.add_order();
-            // ord->set_whid(closest_wh_id);
-            // ord->set_x(closest_wh_x);
-            // ord->set_y(closest_wh_y);
-            // ord->set_packageid(tracking_number_int);
-            // ord->set_upsusername(ups_account);
-            // Product* pd = ord->add_item();
-            // pd->set_id(product_id);
-            // pd->set_description(product_name);
-            // pd->set_amount(amount);
-            // mtx.lock();//////lock
-            // ord->set_seqnum(ups_seqnum);
-            // pair<long int, AUCommands> order_pair(ups_seqnum, od);
-            // ups_seqnum++;
-            // mtx.unlock();/////unlock
-            // send_ups_queue.pushback(order_pair);
+            AUCommands od;
+            Order* ord = od.add_order();
+            ord->set_whid(closest_wh_id);
+            ord->set_x(closest_wh_x);
+            ord->set_y(closest_wh_y);
+            ord->set_packageid(tracking_number_int);
+            ord->set_upsusername(ups_account);
+            Product* pd = ord->add_item();
+            pd->set_id(product_id);
+            pd->set_description(product_name);
+            pd->set_amount(amount);
+            mtx.lock();//////lock
+            ord->set_seqnum(ups_seqnum);
+            pair<long int, AUCommands> order_pair(ups_seqnum, od);
+            ups_seqnum++;
+            mtx.unlock();/////unlock
+            send_ups_queue.pushback(order_pair);
+            cout << "stock enough send truck to ups" << endl;
         }
     } else {
         cout << "Use wh_id and product_name to get product failed\n";

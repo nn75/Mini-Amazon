@@ -37,13 +37,12 @@ void Sender<T>::start_sending() {
     cout << "start sender thread" << endl;
     while (1) {
         if (sender_queue.get_next_send() == sender_queue.get_dq_size()) {
-            // usleep(100000);
+            usleep(100000);
             continue;
         }
-        // cerr << sender_queue.get_next_send()
-        //      << "== " << sender_queue.get_dq_size() << endl;
+        cout << sender_queue.get_next_send() << "== " << sender_queue.get_dq_size() << endl;
         T message = sender_queue.send_next().second;
-        cout << "pair first:" << sender_queue.send_next().first << endl;
+        //cout << "pair first:" << sender_queue.send_next().first << endl;
         if (!communicator->send_msg(message)) {
             break;
         } else {

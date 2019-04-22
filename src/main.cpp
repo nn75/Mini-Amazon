@@ -67,12 +67,11 @@ int main(int argc, char* argv[]) {
     /// Testing message start here
     /////////////////////////////////
     // Initialize processors
-    WorldProcessor* world_processor = new WorldProcessor(
-        s_w_q, r_w_q, s_u_q, world_communicator, wnum, unum, mt);
-    // UpsProcessor* ups_processor = new UpsProcessor(s_w_q, r_u_q, s_u_q,
-    // ups_communicator, wnum, unum, mt); WebProcessor* web_processor = new
-    // WebProcessor(s_w_q, s_u_q, wnum, unum, mt); Initialize an ACommand to buy
-    // more, and push into send world queue
+    WorldProcessor* world_processor = new WorldProcessor(s_w_q, r_w_q, s_u_q, world_communicator, wnum, unum, mt);
+    //UpsProcessor* ups_processor = new UpsProcessor(s_w_q, r_u_q, s_u_q, ups_communicator, wnum, unum, mt); 
+    //WebProcessor* web_processor = new WebProcessor(s_w_q, s_u_q, wnum, unum, mt); 
+    
+    //Initialize an ACommand to buy more, and push into send world queue
     ACommands pm;
     APurchaseMore* apm = pm.add_buy();
     apm->set_whnum(1);
@@ -81,20 +80,28 @@ int main(int argc, char* argv[]) {
     pd->set_description("Apple");
     pd->set_count(450);
     apm->set_seqnum(0);
+    wnum++;
     pair<long int, ACommands> test1(0, pm);
     s_w_q.pushback(test1);
 
-    // wnum++;
+    
 
-    // ACommands pk;
-    // APack* apk = pk.add_topack();
-    // apk->set_whnum(1);
-    // AProduct* pd = apk->add_things();
-    // apk->set_seqnum(1);
-    // pd->set_id(1);
-    // pd->set_description("test");
-    // pd->set_count(2);
-    // wnum++;
+    usleep(100000);
+
+    ACommands pk;
+    APack* apk = pk.add_topack();
+    apk->set_whnum(1);
+    AProduct* pd2 = apk->add_things();
+    pd2->set_id(1);
+    pd2->set_description("Apple");
+    pd2->set_count(20);
+    apk->set_shipid(7);
+    apk->set_seqnum(1);
+    wnum++;
+    pair<long int, ACommands> test2(1, pk);
+    s_w_q.pushback(test2);
+
+
 
     // ACommands ld;
     // APutOnTruck* apt = ld.add_load();
