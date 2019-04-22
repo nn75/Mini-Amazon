@@ -36,7 +36,7 @@ void WorldProcessor::world_command_process() {
                     cout << "ack from world:" << ack_seq << endl;
                     pair<long int, ACommands> temp;
                     while (ack_seq != seq) {
-                        if (send_world_queue.next_send == 0) break;
+                        if (send_world_queue.get_next_send() == 0) break;
                         if (seq == -1) {
                             send_world_queue.popfront(temp);
                             continue;
@@ -45,7 +45,7 @@ void WorldProcessor::world_command_process() {
                         send_world_queue.pushback(temp);
                         seq = send_world_queue.front().first;
                     }
-                    if (send_world_queue.next_send == 0) break;
+                    if (send_world_queue.get_next_send() == 0) break;
                     send_world_queue.popfront(temp);
                 }
             }
@@ -90,7 +90,7 @@ void WorldProcessor::world_command_process() {
                     } else {
                         cout << "ready = Can't open database" << endl;
                     }
-                    string update_to_packed = "UPDATE orders_order SET status = packed WHERE tracking_number= "+ to_string(ship_id) + ";";
+                    string update_to_packed = "UPDATE orders_order SET status = 'packed' WHERE tracking_number= "+ to_string(ship_id) + ";";
                     work W1(C);
                     W1.exec(update_to_packed);
                     W1.commit();
@@ -144,7 +144,7 @@ void WorldProcessor::world_command_process() {
                     } else {
                         cout << "arrived = Can't open database" << endl;
                     }
-                    string increase_stock = "UPDATE orders_product SET stock = 500 WHERE product_id = "+ to_string(product_id) +" AND wh_id = "+ to_string(wh_num)+";";
+                    string increase_stock = "UPDATE orders_product SET stock = stock+"+ to_string(product_count)+" WHERE product_id = "+ to_string(product_id) +" AND wh_id = "+ to_string(wh_num)+";";
                     work W(C);
                     W.exec( increase_stock );
                     W.commit();

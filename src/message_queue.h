@@ -17,14 +17,14 @@ class message_queue {
     mutable mutex m;
     // The postion of message
     int pos;
+    int dq_size;
+    int next_send;
     // The size of message_queue
 
     /////////////////////////////////
     /// Public members start here
     /////////////////////////////////
    public:
-    int dq_size;
-    int next_send;
     // Constructor
     message_queue() : dq(), m(), pos(0), dq_size(0), next_send(0){};
     // Check existence of message and its position
@@ -39,9 +39,24 @@ class message_queue {
     T front();
     // Send next message
     T send_next();
+    int get_dq_size();
+    int get_next_send();
+
     // Destructor
     ~message_queue(){};
 };
+
+template <class T>
+int message_queue<T>::get_dq_size(){
+    lock_guard<mutex> lock(m);
+    return dq_size;
+}
+template <class T>
+int message_queue<T>::get_next_send(){
+    lock_guard<mutex> lock(m);
+    return next_send;
+}
+
 
 template <class T>
 int message_queue<T>::where(T value) {
@@ -78,7 +93,7 @@ T message_queue<T>::send_next() {
         next_send++;
         return dq[next_send - 1];
     }
-    assert(0);
+    return dq[dq_size-1];
 }
 
 template <class T>

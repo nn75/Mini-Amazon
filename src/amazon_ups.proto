@@ -18,7 +18,7 @@ message Order{
 	required int32 y = 3;
 	required int64 packageid = 4;
 	required string upsusername = 5; 
-required Product item = 6; 
+	required Product item = 6; 
 	required int64 seqnum = 7;
 }
 

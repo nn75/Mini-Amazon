@@ -35,7 +35,7 @@ void UpsProcessor::ups_command_process() {
                     cout << "ack from ups:" << ack_seq << endl;
                     pair<long int, AUCommands> temp;
                     while (ack_seq != seq) {
-                        if (send_ups_queue.next_send == 0) break;
+                        if (send_ups_queue.get_next_send() == 0) break;
                         if (seq == -1) {
                             send_ups_queue.popfront(temp);
                             continue;
@@ -44,7 +44,7 @@ void UpsProcessor::ups_command_process() {
                         send_ups_queue.pushback(temp);
                         seq = send_ups_queue.front().first;
                     }
-                    if (send_ups_queue.next_send == 0) break;
+                    if (send_ups_queue.get_next_send() == 0) break;
                     send_ups_queue.popfront(temp);
                 }
             }
@@ -100,6 +100,8 @@ void UpsProcessor::ups_command_process() {
                     long int package_id = tmp_msg.finish(i).packageid();
                     long int finish_seq = tmp_msg.finish(i).seqnum();
                     ack_res.add_acks(finish_seq);
+                    cout << "ups finish package_id" << package_id << endl;
+                    cout << "ups finish finish_seq" << finish_seq << endl;
                     
                     // database: If ups said 
                     connection C("dbname = mini_amazon user = postgres password = passw0rd hostaddr = 67.159.95.41 port = 5432");
@@ -107,16 +109,16 @@ void UpsProcessor::ups_command_process() {
                     } else {
                         cout << "arrived = Can't open database" << endl;
                     }
-                    string update_delivered = "UPDATE orders_product SET status = delivered WHERE tracking = "+ to_string(package_id) + ";";
+                    string update_delivered = "UPDATE orders_order SET status='delivered' WHERE tracking_number = "+ to_string(package_id) + ";";
                     work W(C);
                     W.exec(update_delivered);
                     W.commit();
                     C.disconnect ();
-
                 }
             }
             if(ack_res.acks_size() != 0){
                 pair<long int, AUCommands> r_acks(-1, ack_res);
+                cout<<"stupid"<<ack_res.acks(0)<<endl;
                 send_ups_queue.pushback(r_acks);
             }
         }//not if_empty
