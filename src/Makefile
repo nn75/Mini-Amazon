@@ -14,7 +14,7 @@ Mini_amazon:$(OBJS) $(OBJS2)
 
 .PHONY: clean
 clean:
-	rm -f Mini_amazon *.o *~ test testab UPS.log a.out
+	rm -f Mini_amazon *.o *~ a.out
 
 test:
 	g++ -ggdb3 helper.cpp log.cpp upserver.cpp dbinterface.cpp client.cpp world_ups.pb.cc ups_amazon.pb.cc worldbridge.cpp amazonbridge.cpp -o test `pkg-config --cflags --libs protobuf` $(EXTRAFLAGS)

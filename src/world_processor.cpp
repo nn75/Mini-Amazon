@@ -21,7 +21,7 @@ WorldProcessor::WorldProcessor(
       ups_seqnum(unum),
       mtx(mt),
       world_thread(thread(&WorldProcessor::world_command_process, this)) {
-    cout << "world processor activated" << endl;
+    cout << "world processor activate success" << endl;
 }
 
 void WorldProcessor::world_command_process() {
@@ -76,12 +76,11 @@ void WorldProcessor::world_command_process() {
                     ups_deliver->set_packageid(ship_id);
                     mtx.lock();  //////lock
                     ups_deliver->set_seqnum(ups_seqnum);
-                    cout << "ups_seqnum ask ups to deliver: " << ups_seqnum << endl;
+                    cout << "Request ups to deliver, seqnum: " << ups_seqnum << endl;
                     pair<long int, AUCommands> ups_deliver_pair(ups_seqnum, ups_deliver_msg);
                     ups_seqnum++;
                     mtx.unlock();  /////unlock
                     send_ups_queue.pushback(ups_deliver_pair);
-                    cout << "ask ups to deliver, leave here for ups testing" << endl;
                 }
             }
             if (tmp_msg.ready_size() != 0) {
@@ -114,6 +113,7 @@ void WorldProcessor::world_command_process() {
                     if (res.size() == 1) {
                         //If there's truck arrived
                         cout << "truck arrived" << endl;
+
                         ACommands world_load_msg;
                         APutOnTruck* put_on_truck = world_load_msg.add_load();
                         put_on_truck->set_whnum(atoi(res[0][4].c_str()));
@@ -129,7 +129,7 @@ void WorldProcessor::world_command_process() {
                         string update_to_loading ="UPDATE orders_order SET status = 'loading' WHERE tracking_number= " + to_string(ship_id) + ";";
                         dbi->run_query(update_to_loading);
                     }else{
-                        cout << "truck haven't arrived" << endl;
+                        cout << "Truck haven't arrived" << endl;
                     }
                 }
             }
@@ -172,7 +172,7 @@ void WorldProcessor::world_command_process() {
                     
                     int order_id = 0;
                     if(res_enough.size() == 1){
-                        cout << "Got one enough product" << endl;
+                        cout << "Buy one product enough in warehouse" << endl;
                         order_id = atoi(res_enough[0][0].c_str());
                         string stocking_to_packing = "UPDATE orders_order SET status = 'packing' WHERE tracking_number = "+to_string(order_id)+";";
                         dbi->run_query(stocking_to_packing);
@@ -197,7 +197,7 @@ void WorldProcessor::world_command_process() {
                         world_seqnum++;
                         mtx.unlock();  /////unlock
                         send_world_queue.pushback(topack_pair);
-                        cout << "after buy, stock enough send topack to world" << endl;
+                        cout << "After buy more, stock enough, send topack to world" << endl;
 
                         //Get order_info address_x, address_y, ups_account,
                         string get_order_info = "SELECT * FROM orders_order";
@@ -221,14 +221,16 @@ void WorldProcessor::world_command_process() {
                         mtx.lock();//////lock
                         ord->set_seqnum(ups_seqnum);
                         pair<long int, AUCommands> order_pair(ups_seqnum, od);
-                        cout << "ups_seqnum ask ups to send truck: " << ups_seqnum << endl;
+                        cout << "Request ups tosend truck, seqnum: " << ups_seqnum << endl;
                         ups_seqnum++;
                         mtx.unlock();/////unlock
                         send_ups_queue.pushback(order_pair);
-                        cout << "after buy, stock enough send ask ups to send truck" << endl;
+                        cout << "After buy more, stock enough, send topack to world" << endl;
 
                     }else{
-                        cout << "No such stocking order" << endl;
+                        cout << "Initialing product" << endl;
+                        string init_stock_100 = "UPDATE orders_product SET stock = 100 WHERE product_id = " + to_string(product_id) + " AND wh_id = " + to_string(wh_num) + ";";
+                        dbi->run_query(init_stock_100);
                     }
                 }
             }

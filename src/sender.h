@@ -34,7 +34,7 @@ class Sender {
 
 template <class T>
 void Sender<T>::start_sending() {
-    cout << "start sender thread" << endl;
+    cout << "start sender thread success" << endl;
     while (1) {
         if (sender_queue.get_next_send() == sender_queue.get_dq_size()) {
             usleep(100000);

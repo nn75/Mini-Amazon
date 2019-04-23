@@ -44,7 +44,7 @@ bool WebProcessor::connect() {
 
     // For thread
     web_recevier_thread = thread(&WebProcessor::start_recv, this);
-    cout << "Start web recevier thread\n";
+    cout << "start web recevier thread success\n";
 
     return true;
 }
@@ -101,7 +101,7 @@ bool WebProcessor::setup_sock() {
         this->fail_connect("Cannot listen on web socket");
         return false;
     }
-    cout << "WebReceiver listening for connection\n";
+    cout << "web processor activate success\n";
 
     return true;
 }
@@ -151,15 +151,10 @@ void WebProcessor::get_buy_info() {
     string tracking_number = tokens[0];
     // string ups_account = tokens[1];
 
-    cout << "\nTracking number: " << tracking_number;
+    cout << "New Order Tracking number: " << tracking_number << endl;
     //      << "\nUPS account: " << ups_account << endl;
 
     database_interface* dbi = new database_interface();
-
-    // 1) Take out pending order and add to order table
-    // 2) Send AUCommands to ups to send truck
-    // 3) Send ACommands to world to pack product (If the stock is not enough,
-    // send ToPurchaseMore)
 
     // Get info from orders_pendingorder
     string get_pending_order =
@@ -243,6 +238,7 @@ void WebProcessor::get_buy_info() {
             world_seqnum++;
             mtx.unlock();  /////unlock
             send_world_queue.pushback(buy_pair);
+            cout << "Stock not enough, ask world to buy more" << endl;
 
         } else if (stock - amount >= 100) {  
             // If stock enough send pack message to world and send truck message to ups, add it to real order table
@@ -278,7 +274,7 @@ void WebProcessor::get_buy_info() {
             world_seqnum++;
             mtx.unlock();  /////unlock
             send_world_queue.pushback(topack_pair);
-            cout << "stock enough send topack to world" << endl;
+            cout << "Stock enough send topack to world" << endl;
 
             // Send truck message to ups
             AUCommands od;
@@ -299,34 +295,42 @@ void WebProcessor::get_buy_info() {
             ups_seqnum++;
             mtx.unlock();/////unlock
             send_ups_queue.pushback(order_pair);
-            cout << "stock enough send truck to ups" << endl;
+            cout << "Stock enough send truck to ups" << endl;
         }else{
             cout << "Stock limit error" << endl;
         }
     } else {
         //There's no such product in this warehouse, create a new product in this warehouse
         //cout << "Use wh_id and product_name to get product failed\n";
-        cout << "To create a new product at warehouse " << closest_wh_id << endl;
         mtx.lock(); 
         //Get product id
-        string get_new_product_id = "SELECT COUNT(DISTINCT product_name) FROM orders_product";
-        vector<vector<string> > res_new_product_id = dbi->run_query_with_results(get_new_product_id);
-        int new_product_id = 1 + atoi(res_new_product_id[0][0].c_str());
-        cout << "new_product_id is:" << new_product_id << endl;
+        string whether_new_product = "SELECT * FROM orders_product WHERE product_name = '" + product_name + "';";
+        vector<vector<string>> res_new_old = dbi->run_query_with_results(whether_new_product);
+        int insert_new_product_id = 0;
+        if(res_new_old.size() == 1){
+            cout << "Product exists in world, but not in warehouse" << closest_wh_id << endl;
+            insert_new_product_id = atoi(res_new_old[0][1].c_str());
+        }else{
+            cout << "Product not exists in world, create new"<< endl;
+            string get_new_product_id = "SELECT COUNT(DISTINCT product_name) FROM orders_product";
+            vector<vector<string> > res_new_product_id = dbi->run_query_with_results(get_new_product_id);
+            insert_new_product_id = 1 + atoi(res_new_product_id[0][0].c_str());
+            cout << "insert_new_product_id is:" << insert_new_product_id << endl;
+        }
         //Count total items in orders_product
         string get_new_id = "SELECT COUNT(*) FROM orders_product";
         vector<vector<string> > res_new_id = dbi->run_query_with_results(get_new_id);
-        int new_id = 1 + atoi(res_new_id[0][0].c_str());
-        cout << "new id is:" << new_id << endl;
+        int biggest_existing = atoi(res_new_id[0][0].c_str());
+        int new_id = 1 + biggest_existing;
         //Insert into order_product
         string insert_new_product = "INSERT INTO orders_product (id, product_id, product_name, wh_id, stock) VALUES ( " + to_string(new_id) + ", " + 
-                to_string(new_product_id) + ", '" + to_string(product_name) + "', " +to_string(closest_wh_id) + ", " + to_string(amount) + ");";
+                to_string(insert_new_product_id) + ", '" + to_string(product_name) + "', " +to_string(closest_wh_id) + ", " + to_string(amount) + ");";
         dbi->run_query(insert_new_product);
         mtx.unlock();
 
         string add_stocking_order = "INSERT INTO orders_order(tracking_number, user_id, ups_account, product_id, wh_id, truck_id,status,adr_x,adr_y, amount) VALUES ( " +
                 to_string(tracking_number) + ", " + to_string(user_id) + ", '" +
-                ups_account + "', " + to_string(new_product_id) + ", " +
+                ups_account + "', " + to_string(insert_new_product_id) + ", " +
                 to_string(closest_wh_id) + ", " + to_string(-1) + ", " +
                 "'stocking'" + ", " + to_string(address_x) + ", " +
                 to_string(address_y) + ", " + to_string(amount) + ");";
@@ -338,7 +342,7 @@ void WebProcessor::get_buy_info() {
         APurchaseMore *new_apm_buy = new_buy.add_buy();
         new_apm_buy->set_whnum(closest_wh_id);
         AProduct *new_pd_buy = new_apm_buy->add_things();
-        new_pd_buy->set_id(new_product_id);
+        new_pd_buy->set_id(insert_new_product_id);
         new_pd_buy->set_description(product_name);
         new_pd_buy->set_count(amount + 500);
         mtx.lock();  //////lock

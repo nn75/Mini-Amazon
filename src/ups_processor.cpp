@@ -19,7 +19,7 @@ UpsProcessor::UpsProcessor(message_queue<pair<long int, ACommands>>& mq1,
       ups_seqnum(unum),
       mtx(mt),
       ups_thread(thread(&UpsProcessor::ups_command_process, this)) {
-    cout << "ups processor activated" << endl;
+    cout << "ups processor activate success" << endl;
 }
 
 void UpsProcessor::ups_command_process() {

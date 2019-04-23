@@ -106,7 +106,6 @@ class Communicator {
     template <typename T>
     bool send_msg(const T &message) {
         if (!this->is_connect()) {
-            std::cout << "is connect()" << std::endl;
             return false;
         }
         return sendMesgTo(message, sock_fd);
