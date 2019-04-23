@@ -322,7 +322,7 @@ const char descriptor_table_protodef_amazon_5fups_2eproto[] =
   "\002(\005\022\021\n\tpackageid\030\004 \002(\003\022\023\n\013upsusername\030\005 "
   "\002(\t\022\026\n\004item\030\006 \003(\0132\010.Product\022\016\n\006seqnum\030\007 "
   "\002(\003\",\n\007Deliver\022\021\n\tpackageid\030\001 \002(\003\022\016\n\006seq"
-  "num\030\003 \002(\003\">\n\nAWarehouse\022\n\n\002id\030\001 \002(\005\022\t\n\001x"
+  "num\030\002 \002(\003\">\n\nAWarehouse\022\n\n\002id\030\001 \002(\005\022\t\n\001x"
   "\030\002 \002(\005\022\t\n\001y\030\003 \002(\005\022\016\n\006seqnum\030\004 \002(\003\"k\n\nAUC"
   "ommands\022\025\n\005order\030\001 \003(\0132\006.Order\022\033\n\ttodeli"
   "ver\030\002 \003(\0132\010.Deliver\022\033\n\006whinfo\030\003 \003(\0132\013.AW"
@@ -1532,9 +1532,9 @@ const char* Deliver::_InternalParse(const char* begin, const char* end, void* ob
         GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
         break;
       }
-      // required int64 seqnum = 3;
-      case 3: {
-        if (static_cast<::google::protobuf::uint8>(tag) != 24) goto handle_unusual;
+      // required int64 seqnum = 2;
+      case 2: {
+        if (static_cast<::google::protobuf::uint8>(tag) != 16) goto handle_unusual;
         msg->set_seqnum(::google::protobuf::internal::ReadVarint(&ptr));
         GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
         break;
@@ -1579,9 +1579,9 @@ bool Deliver::MergePartialFromCodedStream(
         break;
       }
 
-      // required int64 seqnum = 3;
-      case 3: {
-        if (static_cast< ::google::protobuf::uint8>(tag) == (24 & 0xFF)) {
+      // required int64 seqnum = 2;
+      case 2: {
+        if (static_cast< ::google::protobuf::uint8>(tag) == (16 & 0xFF)) {
           HasBitSetters::set_has_seqnum(this);
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
@@ -1625,9 +1625,9 @@ void Deliver::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteInt64(1, this->packageid(), output);
   }
 
-  // required int64 seqnum = 3;
+  // required int64 seqnum = 2;
   if (cached_has_bits & 0x00000002u) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt64(3, this->seqnum(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteInt64(2, this->seqnum(), output);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
@@ -1649,9 +1649,9 @@ void Deliver::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(1, this->packageid(), target);
   }
 
-  // required int64 seqnum = 3;
+  // required int64 seqnum = 2;
   if (cached_has_bits & 0x00000002u) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(3, this->seqnum(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(2, this->seqnum(), target);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
@@ -1674,7 +1674,7 @@ size_t Deliver::RequiredFieldsByteSizeFallback() const {
   }
 
   if (has_seqnum()) {
-    // required int64 seqnum = 3;
+    // required int64 seqnum = 2;
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::Int64Size(
         this->seqnum());
@@ -1697,7 +1697,7 @@ size_t Deliver::ByteSizeLong() const {
       ::google::protobuf::internal::WireFormatLite::Int64Size(
         this->packageid());
 
-    // required int64 seqnum = 3;
+    // required int64 seqnum = 2;
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::Int64Size(
         this->seqnum());

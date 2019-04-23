@@ -529,10 +529,10 @@ class Deliver :
   ::google::protobuf::int64 packageid() const;
   void set_packageid(::google::protobuf::int64 value);
 
-  // required int64 seqnum = 3;
+  // required int64 seqnum = 2;
   bool has_seqnum() const;
   void clear_seqnum();
-  static const int kSeqnumFieldNumber = 3;
+  static const int kSeqnumFieldNumber = 2;
   ::google::protobuf::int64 seqnum() const;
   void set_seqnum(::google::protobuf::int64 value);
 
@@ -1608,7 +1608,7 @@ inline void Deliver::set_packageid(::google::protobuf::int64 value) {
   // @@protoc_insertion_point(field_set:Deliver.packageid)
 }
 
-// required int64 seqnum = 3;
+// required int64 seqnum = 2;
 inline bool Deliver::has_seqnum() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }

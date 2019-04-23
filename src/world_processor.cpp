@@ -76,6 +76,7 @@ void WorldProcessor::world_command_process() {
                     ups_deliver->set_packageid(ship_id);
                     mtx.lock();  //////lock
                     ups_deliver->set_seqnum(ups_seqnum);
+                    cout << "ups_seqnum ask ups to deliver: " << ups_seqnum << endl;
                     pair<long int, AUCommands> ups_deliver_pair(ups_seqnum, ups_deliver_msg);
                     ups_seqnum++;
                     mtx.unlock();  /////unlock
@@ -119,12 +120,10 @@ void WorldProcessor::world_command_process() {
                         put_on_truck->set_truckid(atoi(res[0][5].c_str()));
                         put_on_truck->set_shipid((long int)atoi(res[0][0].c_str()));
                         mtx.lock();  //////lock
-                        cout << "world seqnum in function" << world_seqnum << endl;
                         put_on_truck->set_seqnum(world_seqnum);
                         pair<long int, ACommands> world_load_pair(world_seqnum, world_load_msg);
                         world_seqnum++;
                         mtx.unlock();  /////unlock
-                        cout << "pair: world_seqnum before pushinto queue:" << world_load_pair.first << endl;
                         send_world_queue.pushback(world_load_pair);
                         // After packed and truck arrived, update order status to loading
                         string update_to_loading ="UPDATE orders_order SET status = 'loading' WHERE tracking_number= " + to_string(ship_id) + ";";
@@ -170,12 +169,19 @@ void WorldProcessor::world_command_process() {
                     string first_enough_order = "SELECT * FROM orders_order WHERE product_id = " + to_string(product_id) +
                         " AND wh_id = " + to_string(wh_num) + " AND amount = " + to_string(product_count - 500) + " LIMIT 1 ;";
                     vector<vector<string>> res_enough= dbi->run_query_with_results(first_enough_order);
+                    
                     int order_id = 0;
                     if(res_enough.size() == 1){
                         cout << "Got one enough product" << endl;
                         order_id = atoi(res_enough[0][0].c_str());
                         string stocking_to_packing = "UPDATE orders_order SET status = 'packing' WHERE tracking_number = "+to_string(order_id)+";";
                         dbi->run_query(stocking_to_packing);
+
+                        //Minus stock
+                        string minus_stock = "UPDATE orders_product SET stock = stock-"+to_string(product_count - 500)+" WHERE product_id = " + to_string(product_id) +
+                        " AND wh_id = " + to_string(wh_num) + ";";
+                        dbi->run_query(minus_stock);
+
                         //And send message pack message to world
                         ACommands topack;
                         APack *ap_topack = topack.add_topack();
@@ -192,11 +198,38 @@ void WorldProcessor::world_command_process() {
                         mtx.unlock();  /////unlock
                         send_world_queue.pushback(topack_pair);
                         cout << "after buy, stock enough send topack to world" << endl;
+
+                        //Get order_info address_x, address_y, ups_account,
+                        string get_order_info = "SELECT * FROM orders_order";
+                        vector<vector<string>> res_info= dbi->run_query_with_results(get_order_info);
+                        string ups_account = res_info[0][2];
+                        int address_x = atoi(res_info[0][7].c_str());
+                        int address_y = atoi(res_info[0][8].c_str());
+                        
+                        // Send truck message to ups
+                        AUCommands od;
+                        Order* ord = od.add_order();
+                        ord->set_whid(wh_num);
+                        ord->set_x(address_x);
+                        ord->set_y(address_y);
+                        ord->set_packageid(order_id);
+                        ord->set_upsusername(ups_account);
+                        Product* pd = ord->add_item();
+                        pd->set_id(product_id);
+                        pd->set_description(product_desciption);
+                        pd->set_amount(product_count - 500);
+                        mtx.lock();//////lock
+                        ord->set_seqnum(ups_seqnum);
+                        pair<long int, AUCommands> order_pair(ups_seqnum, od);
+                        cout << "ups_seqnum ask ups to send truck: " << ups_seqnum << endl;
+                        ups_seqnum++;
+                        mtx.unlock();/////unlock
+                        send_ups_queue.pushback(order_pair);
+                        cout << "after buy, stock enough send ask ups to send truck" << endl;
+
                     }else{
                         cout << "No such stocking order" << endl;
                     }
-
-
                 }
             }
             if (tmp_msg.error_size() != 0) {  // Process the response of purchursemore
