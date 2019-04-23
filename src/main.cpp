@@ -4,6 +4,7 @@
 #include <iostream>
 #include <pqxx/pqxx>
 
+
 #include "amazon_ups.pb.h"
 #include "message_queue.h"
 #include "world_amazon.pb.h"
@@ -48,15 +49,13 @@ int main(int argc, char* argv[]) {
     long int unum = 0;
     mutex mt;
 
-
-
     // Test for world connect and create
-    // cout << "\nTest 1: Connect to 127.0.0.1 without worldid" << endl;
-    // world_communicator->connect("localhost");
+    cout << "\nTest 1: Connect to 127.0.0.1 without worldid" << endl;
+    world_communicator->connect("localhost");
 
     // Test for connect to worldid told by ups
-    cout << "\nTest: Connect to vcm-6873.vm.duke.edu with input worldid"<<endl; 
-    world_communicator->connect("67.159.94.99", worldid_input);
+    // cout << "\nTest: Connect to vcm-6873.vm.duke.edu with input worldid"<<endl; 
+    // world_communicator->connect("67.159.94.99", worldid_input);
 
     // Test for Ups socket
     // UpsCommunicator ups_communicator(0, NULL);
@@ -75,54 +74,54 @@ int main(int argc, char* argv[]) {
     web_processor->connect();
 
     // send ACommand to world to prepare product in warehouses
-    AUCommands wh_init_1;
-    AWarehouse * wh1 = wh_init_1.add_whinfo();
-    wh1->set_id(1);
-    wh1->set_x(2);
-    wh1->set_y(3);
-    mt.lock();//////lock
-    wh1->set_seqnum(unum);
-    pair<long int, AUCommands> wh_init_1_pair(unum, wh_init_1);
-    unum++;
-    mt.unlock();/////unlock
-    s_u_q.pushback(wh_init_1_pair);
-    cout << "Send ups warehouse1\n";
+    // AUCommands wh_init_1;
+    // AWarehouse * wh1 = wh_init_1.add_whinfo();
+    // wh1->set_id(1);
+    // wh1->set_x(2);
+    // wh1->set_y(3);
+    // mt.lock();//////lock
+    // wh1->set_seqnum(unum);
+    // pair<long int, AUCommands> wh_init_1_pair(unum, wh_init_1);
+    // unum++;
+    // mt.unlock();/////unlock
+    // s_u_q.pushback(wh_init_1_pair);
+    // cout << "Send ups warehouse1\n";
 
-    AUCommands wh_init_2;
-    AWarehouse * wh2 = wh_init_2.add_whinfo();
-    wh2->set_id(2);
-    wh2->set_x(4);
-    wh2->set_y(6);
-    mt.lock();//////lock
-    wh2->set_seqnum(unum);
-    pair<long int, AUCommands> wh_init_2_pair(unum, wh_init_2);
-    unum++;
-    mt.unlock();/////unlock
-    s_u_q.pushback(wh_init_2_pair);
-    cout << "Send ups warehouse2\n";
+    // AUCommands wh_init_2;
+    // AWarehouse * wh2 = wh_init_2.add_whinfo();
+    // wh2->set_id(2);
+    // wh2->set_x(4);
+    // wh2->set_y(6);
+    // mt.lock();//////lock
+    // wh2->set_seqnum(unum);
+    // pair<long int, AUCommands> wh_init_2_pair(unum, wh_init_2);
+    // unum++;
+    // mt.unlock();/////unlock
+    // s_u_q.pushback(wh_init_2_pair);
+    // cout << "Send ups warehouse2\n";
 
-    AUCommands wh_init_3;
-    AWarehouse * wh3 = wh_init_3.add_whinfo();
-    wh3->set_id(3);
-    wh3->set_x(6);
-    wh3->set_y(9);
-    mt.lock();//////lock
-    wh3->set_seqnum(unum);
-    pair<long int, AUCommands> wh_init_3_pair(unum, wh_init_3);
-    unum++;
-    mt.unlock();/////unlock
-    s_u_q.pushback(wh_init_3_pair);
-    cout << "Send ups warehouse3\n";
+    // AUCommands wh_init_3;
+    // AWarehouse * wh3 = wh_init_3.add_whinfo();
+    // wh3->set_id(3);
+    // wh3->set_x(6);
+    // wh3->set_y(9);
+    // mt.lock();//////lock
+    // wh3->set_seqnum(unum);
+    // pair<long int, AUCommands> wh_init_3_pair(unum, wh_init_3);
+    // unum++;
+    // mt.unlock();/////unlock
+    // s_u_q.pushback(wh_init_3_pair);
+    // cout << "Send ups warehouse3\n";
 
     
-    //Initialize an ACommand to buy more, and push into send world queue
+    // //Initialize an ACommand to buy more, and push into send world queue
     ACommands pm;
     APurchaseMore* apm = pm.add_buy();
     apm->set_whnum(1);
     AProduct* pd = apm->add_things();
     pd->set_id(1);
     pd->set_description("Apple");
-    pd->set_count(550);
+    pd->set_count(512);
     mt.lock();  //////lock
     apm->set_seqnum(wnum);
     pair<long int, ACommands> test1(wnum, pm);
@@ -131,7 +130,11 @@ int main(int argc, char* argv[]) {
     s_w_q.pushback(test1);
 
 
-    // usleep(100000);
+    // usleep(10000);
+
+    // AResponses sim_other_ack;
+    // sim_other_ack.add_acks(1);
+    // r_w_q.pushback(sim_other_ack);
 
     // ACommands pk;
     // APack* apk = pk.add_topack();

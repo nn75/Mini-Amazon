@@ -78,7 +78,7 @@ void Communicator::fail_connect(const char *err_msg) {
 }
 
 bool Communicator::setup_sock(const char *hostname) {
-    struct sockaddr_in address;
+    //struct sockaddr_in address;
     struct sockaddr_in serv_addr;
     struct hostent *hptr;
 

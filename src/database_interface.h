@@ -2,11 +2,15 @@
 #include <pqxx/pqxx>
 #include <string>
 #include <vector>
+#include <mutex>
 
 using namespace std;
 using namespace pqxx;
 
 class database_interface {
+   private:
+    mutable mutex m;
+
    public:
     connection *C;
 
@@ -29,6 +33,7 @@ class database_interface {
     }
 
     void run_query(string query) {
+        lock_guard<mutex> lock(m);
         work *W;
         W = new work(*C);
         W->exec(query);
@@ -36,6 +41,7 @@ class database_interface {
     }
 
     vector<vector<string> > run_query_with_results(string query) {
+        lock_guard<mutex> lock(m);
         work *W;
         W = new work(*C);
         result r = W->exec(query);

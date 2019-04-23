@@ -1,0 +1,13 @@
+version: '2'
+
+services:    
+  server:
+    build: ./src
+    user: root
+    command: bash -c "make clean && make && ./Mini_amazon 1"
+    expose:
+    - "23456"
+    ports:
+      - "23456:23456"
+    tty: true
+    

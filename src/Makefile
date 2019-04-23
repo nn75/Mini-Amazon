@@ -1,22 +1,23 @@
-CC=clang++
-CPPFLAGS=-std=c++11 -O3
-DBGCPPFLAGS=-std=c++11 -g -DDEBUG
+CC=g++
+CFLAGS=-std=gnu++11  -ggdb3 -pthread 
+EXTRAFLAGS=-lpqxx -lpq
 SRCS=$(wildcard *.cpp)
-OBJS=$(patsubst %.cpp,%.o,$(SRCS))
-DBGOBJS=$(patsubst %.cpp,%.dbg.o,$(SRCS))
-
-.PHONY: test clean
-
-test: $(OBJS)
-	$(CC) -o $@ $(OBJS) world_amazon.pb.cc amazon_ups.pb.cc -L/usr/local/lib -lpthread -lprotobuf -std=c++11
+OBJS=$(patsubst %.cpp, %.o,$(SRCS))
+SRCS2=$(wildcard *.cc)
+OBJS2=$(patsubst %.cc, %.o,$(SRCS2))
+Mini_amazon:$(OBJS) $(OBJS2)
+	$(CC) $(CFLAGS) -o $@ $(OBJS) $(OBJS2) $(EXTRAFLAGS) `pkg-config --cflags --libs protobuf`
 %.o:%.cpp
-	$(CC) $(CPPFLAGS) -o $@ -c $<
-debug: $(DBGOBJS)
-	$(CC) -o $@ $(DBGOBJS) world_amazon.pb.cc amazon_ups.pb.cc -L/usr/local/lib -lpthread -lprotobuf -std=c++11
-%.dbg.o:%.cpp
-	$(CC) $(DBGCPPFLAGS) -o $@ -c $<
-clean:
-	rm *.o *.dbg.o test debug
-format:
-	../script/format.sh .
+	$(CC) $(CFLAGS) -c $<
+%.o:%.cc
+	$(CC) $(CFLAGS) -c $<
 
+.PHONY: clean
+clean:
+	rm -f Mini_amazon *.o *~ test testab UPS.log a.out
+
+test:
+	g++ -ggdb3 helper.cpp log.cpp upserver.cpp dbinterface.cpp client.cpp world_ups.pb.cc ups_amazon.pb.cc worldbridge.cpp amazonbridge.cpp -o test `pkg-config --cflags --libs protobuf` $(EXTRAFLAGS)
+
+testab:
+	g++ -ggdb3 helper.cpp log.cpp dbinterface.cpp client.cpp world_ups.pb.cc worldbridge.cpp ups_amazon.pb.cc amazonbridge.cpp -o testab `pkg-config --cflags --libs protobuf` $(EXTRAFLAGS)
